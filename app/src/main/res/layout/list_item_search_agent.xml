@@ -1,0 +1,44 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:padding="6dip"
+    android:layout_marginBottom="6dip">
+    <ImageView
+        android:id="@+id/icon_agent"
+        android:layout_width="50dip"
+        android:layout_height="50dip"
+        android:layout_marginRight="6dip"
+        android:src="@drawable/person_sync" />
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="0dip"
+        android:layout_weight="1"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/txt_agent_phone"
+            android:text="Phone:"
+            android:textColor= "@color/colorAccent"
+            android:singleLine="true"
+            android:ellipsize="marquee"
+            />
+        <!--android:textColor="#E55451"-->
+        <TextView
+            android:id="@+id/txt_agent_name"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textSize="24dip"
+            android:text="Benson Kamau"
+            android:gravity="center_vertical"
+            />
+        <TextView
+            android:id="@+id/txt_agent_id"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textSize="24dip"
+            android:visibility="gone"
+            android:gravity="center_vertical"
+            />
+    </LinearLayout>
+</LinearLayout>

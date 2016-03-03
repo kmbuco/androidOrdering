@@ -1,0 +1,60 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#ffffff">
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="50sp">
+
+        <TextView
+            android:id="@+id/customer_add_date_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="5sp"
+            android:hint="DateTime"
+            android:padding="10sp"
+            android:textColor="#000000"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:typeface="sans"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/customer_check_exists"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/customer_get_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+
+        <EditText
+            android:id="@+id/customer_add_cust_phone"
+            style="@style/StyleTextDetails"
+            android:hint=" E.g 0711223344"
+            android:inputType="phone" />
+
+        <Button
+            android:id="@+id/btnAddCustPhone"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5sp"
+            android:layout_marginTop="10sp"
+            android:background="@drawable/app_button"
+            android:padding="10sp"
+            android:text="Add"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:typeface="sans" />
+
+    </LinearLayout>
+
+</ScrollView>

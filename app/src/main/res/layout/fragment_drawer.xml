@@ -1,0 +1,92 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.copia.copiasalesmobile.DrawerFragment">
+
+    <!-- The navigation drawer -->
+    <RelativeLayout
+        android:layout_width="280dp"
+        android:layout_height="match_parent"
+        android:id="@+id/drawerPane"
+        android:layout_gravity="start">
+
+        <!-- Profile Box -->
+
+        <RelativeLayout
+            android:id="@+id/profileBox"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:background="@drawable/copialanding"
+             >
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:background="@drawable/gradient">
+                <ImageView
+                    android:paddingTop="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:src="@drawable/imagecopialogo"
+                    />
+            </RelativeLayout>
+
+            <ImageView
+                android:id="@+id/avatar"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/person_nav"
+                android:layout_marginTop="15dp" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="42dp"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="15dp"
+                android:layout_toRightOf="@+id/avatar"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:id="@+id/userName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Agent Name"
+                    android:textColor="#fff"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/desc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_marginTop="4dp"
+                    android:text="Agent @ Copia Kenya."
+                    android:textColor="#fff"
+                    android:textSize="12sp" />
+            </LinearLayout>
+        </RelativeLayout>
+
+        <!-- List of Actions (pages) -->
+        <ListView
+            android:id="@+id/navList"
+            android:layout_width="280dp"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/profileBox"
+            android:choiceMode="singleChoice"
+            android:background="#ffffffff" />
+
+        <TextView
+            android:id="@+id/server_location"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:textStyle="italic"
+            android:textColor="@color/colorAccent"
+            android:text="server@"/>
+
+    </RelativeLayout>
+
+
+</FrameLayout>

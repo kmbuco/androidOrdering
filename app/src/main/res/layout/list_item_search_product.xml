@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/category_list_id"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/white"
+    android:padding="5sp">
+
+    <LinearLayout
+        android:id="@+id/_thumbnail_pdt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_marginRight="5dp"
+        android:background="#ffffff"
+        android:padding="10sp" >
+
+        <ImageView
+            android:id="@+id/search_icon"
+            android:layout_width="50dip"
+            android:layout_height="50dip"
+            android:src="@drawable/cart_add"/>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/search_icon_tv"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+    <TextView
+        android:id="@+id/search_desc"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/search_copia_id"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/search_comm"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/search_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/list_list_label"
+        android:layout_alignTop="@+id/_thumbnail_pdt"
+        android:text="aaa"
+        android:typeface="sans"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        android:textStyle="bold" >
+    </TextView>
+
+    <TextView
+        android:id="@+id/search_code"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/search_name"
+        android:layout_toRightOf="@+id/list_list_label"
+        android:text="BCH1"
+        android:textColor="#343434"
+        android:textSize="14sp"
+        android:typeface="sans" />
+    <TextView
+        android:id="@+id/search_tier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/search_price"
+        android:layout_toRightOf="@+id/list_label_tier"
+        android:text="BCH1"
+        android:textColor="#343434"
+        android:textSize="14sp"
+        android:typeface="sans"/>
+
+    <TextView
+        android:id="@+id/search_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/list_list_label"
+        android:layout_below="@+id/search_code"
+        android:layout_marginLeft="3sp"
+        android:text="1000"
+        android:typeface="sans"
+        android:textColor="#343434"
+        android:textSize="14sp"
+        android:visibility="visible" >
+    </TextView>
+
+    <TextView
+        android:id="@+id/list_list_label_code"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/_thumbnail_pdt"
+        android:layout_below="@+id/search_name"
+        android:gravity="center"
+        android:text="Code:"
+        android:textColor="#E55451"
+        android:textSize="14sp"
+        android:typeface="sans" />
+
+    <TextView
+        android:id="@+id/list_list_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/_thumbnail_pdt"
+        android:layout_below="@+id/search_code"
+        android:gravity="center"
+        android:text="KShs."
+        android:textColor="#E55451"
+        android:textSize="14sp"
+        android:typeface="sans" />
+    <TextView
+        android:id="@+id/list_label_tier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/_thumbnail_pdt"
+        android:layout_below="@+id/list_list_label"
+        android:gravity="center"
+        android:text="% Tier:"
+        android:textColor="#E55451"
+        android:textSize="14sp"
+        android:typeface="sans"
+        android:visibility="visible"/>
+
+
+</RelativeLayout>

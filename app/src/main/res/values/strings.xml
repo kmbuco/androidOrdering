@@ -1,0 +1,56 @@
+<resources>
+    <string name="app_name">CopiaSalesMobile</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email
+        completions."
+    </string>
+    <string name="strTotal">Total</string>
+    <string name="strComm">Commission</string>
+    <string name="strQuantity">Quantity</string>
+    <string name="strPrice">Price</string>
+    <string name="strImage">Image</string>
+    <string name="strusername">Username</string>
+
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+    <string name="edit_title">Edit Item</string>
+
+    <string name="failedTitle">Addition failed!</string>
+    <string name="failedMessage">Please create or select an order. Thank you :-)</string>
+    <string name="select_btn">Select</string>
+    <string name="create_btn">Create</string>
+
+    <string name="add_cust_order_title">Customers Orders</string>
+
+    <string name="confirmTitle">Delete Entry?</string>
+    <string name="confirmMessage">This will remove the Entry Permanently!</string>
+    <string name="cancel_btn">Cancel</string>
+    <string name="delete_btn">Delete</string>
+
+    <string name="customer_add_title">Enter Customer Phone no.</string>
+
+    <string name="customer_item_details_title">Order Item Details</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="lbl_pdt_title">Details</string>
+    <string name="lbl_pdt_code">Code:</string>
+    <string name="lbl_pdt_name">Product Name:</string>
+    <string name="lbl_pdt_desc">Description:</string>
+    <string name="lbl_pdt_unit">Unit of Measure:</string>
+    <string name="lbl_pdt_price">Price (KShs):</string>
+    <string name="lbl_pdt_comm">Commission (%):</string>
+    <string name="lbl_pdt_qnty">Enter Quantity:</string>
+    <string name="lbl_pdt_total">Total (KShs):</string>
+    <string name="lbl_pdt_qnty_details">Quantity:</string>
+</resources>

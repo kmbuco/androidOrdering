@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="#ffffff"
+    android:orientation="vertical">
+
+    <include layout="@layout/toolbar" />
+
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="#FFFFFF">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/order_details_name_image"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/order_details_name_title"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/title_gradient"
+                android:gravity="left"
+                android:inputType="none"
+                android:padding="0.5sp"
+                android:text="Pasta Roma Spaghetti"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:typeface="sans" />
+
+            <TableLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10sp"
+                android:padding="10sp"
+                android:stretchColumns="1">
+
+                <ImageView
+                    android:id="@+id/order_details_imageView"
+                    android:layout_width="200sp"
+                    android:layout_height="200sp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="10sp"
+                    android:src="@drawable/noimage" />
+
+                <TableRow style="@style/ProductDetailsLine"></TableRow>
+
+
+                <TableRow>
+
+                    <TextView
+                        style="@style/ProductDetailsTitle"
+                        android:text="@string/lbl_pdt_title" />
+                </TableRow>
+
+                <TableRow>
+
+                    <TextView
+                        style="@style/ProductDetailsLabel"
+                        android:text="@string/lbl_pdt_name" />
+
+                    <TextView
+                        android:id="@+id/order_details_name"
+                        style="@style/ProductDetailsTextView"
+                        android:inputType="none"
+                        android:text="Pasta Roma Spaghetti" />
+                </TableRow>
+
+                <TableRow>
+
+                    <TextView
+                        style="@style/ProductDetailsLabel"
+                        android:text="@string/lbl_pdt_code" />
+
+                    <TextView
+                        android:id="@+id/order_details_code"
+                        style="@style/ProductDetailsTextView"
+                        android:inputType="none"
+                        android:text="CHD1" />
+                </TableRow>
+
+                <TableRow>
+
+                    <TextView
+                        style="@style/ProductDetailsLabel"
+                        android:text="@string/lbl_pdt_desc" />
+
+                    <TextView
+                        android:id="@+id/order_details_desc"
+                        style="@style/ProductDetailsTextView"
+                        android:inputType="none"
+                        android:text="n/a" />
+                </TableRow>
+
+                <TableRow>
+
+                    <TextView
+                        style="@style/ProductDetailsLabel"
+                        android:text="@string/lbl_pdt_price" />
+
+                    <TextView
+                        android:id="@+id/order_details_price"
+                        style="@style/ProductDetailsTextView"
+                        android:inputType="none"
+                        android:text="500" />
+                </TableRow>
+
+                <TableRow>
+
+                    <TextView
+                        style="@style/ProductDetailsLabel"
+                        android:text="@string/lbl_pdt_comm" />
+
+                    <TextView
+                        android:id="@+id/order_details_comm"
+                        style="@style/ProductDetailsTextView"
+                        android:inputType="none"
+                        android:text="10" />
+                </TableRow>
+
+                <TableRow>
+
+                    <TextView
+                        style="@style/ProductDetailsLabel"
+                        android:text="@string/lbl_pdt_qnty_details" />
+
+                    <TextView
+                        android:id="@+id/order_details_quantity"
+                        style="@style/ProductDetailsTextView"
+                        android:text="10" />
+                </TableRow>
+
+                <TableRow>
+
+                    <TextView
+                        style="@style/ProductDetailsLabel"
+                        android:text="@string/lbl_pdt_total" />
+
+                    <TextView
+                        android:id="@+id/order_details_total"
+                        style="@style/ProductDetailsTextView"
+                        android:text="530" />
+                </TableRow>
+
+
+                <TableRow style="@style/ProductDetailsLine"></TableRow>
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <Button
+                        android:id="@+id/btnEditItem"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="30sp"
+                        android:background="@drawable/app_button"
+                        android:text="Edit"
+                        android:textColor="#FFFFFF"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:typeface="sans" />
+
+                    <Button
+                        android:id="@+id/btnDeleteItem"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_below="@+id/btnEditItem"
+                        android:layout_marginBottom="3sp"
+                        android:layout_marginTop="10sp"
+                        android:background="@drawable/app_button"
+                        android:text="Delete"
+                        android:textColor="#FFFFFF"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:typeface="sans" />
+
+                </RelativeLayout>
+
+            </TableLayout>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
