@@ -290,6 +290,7 @@
         android:background="@drawable/app_button"
         android:layout_alignParentBottom="true"
         android:text="Send Order"
+        android:elevation="4dp"
         android:textColor="#FFFFFF"
         android:textSize="14sp"
         android:textStyle="bold"

@@ -1,5 +1,7 @@
 package com.copia.copiasalesmobile;
 
+import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,6 +14,7 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
@@ -22,6 +25,7 @@ import com.copia.copiasalesmobile.utilities.Validation;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 public class AddCustomerActivity extends AppCompatActivity {
     public static final String MyPREFERENCES = "MyPrefs" ;
@@ -37,6 +41,10 @@ public class AddCustomerActivity extends AppCompatActivity {
     public SimpleAdapter conAdapter;
     public String sOrderID = "", sEnterPhone = "", sCheckPhone = "", sNewID = "", sType = "";
 
+    public static final int DATE_DIALOG_ID_FOR = 0;
+    public DatePicker date_picker;
+    Button btn_GetDateFor;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +54,15 @@ public class AddCustomerActivity extends AppCompatActivity {
 
         db = new DatabaseConnectorSqlite(AddCustomerActivity.this);
         sType = "normal";
+
+        btn_GetDateFor = (Button) findViewById(R.id.datepicker_for);
+        btn_GetDateFor.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                //Toast.makeText(getApplicationContext(), "From Clicked...", Toast.LENGTH_SHORT).show();
+                showDialog(DATE_DIALOG_ID_FOR);
+            }
+        });
+
 
         edPhone = (EditText) findViewById(R.id.customer_add_cust_phone);
         tvDateTime = (TextView) findViewById(R.id.customer_add_date_time);
@@ -241,6 +258,73 @@ public class AddCustomerActivity extends AppCompatActivity {
             startActivity(nwIntent);
         }
     }
+
+    protected Dialog onCreateDialog(int id) {
+        if (id == DATE_DIALOG_ID_FOR){
+            DatePickerDialog dpd = new DatePickerDialog(this, mDateSetListenerFor, 2016, 1, 1);
+            /*try {
+                java.lang.reflect.Field[] datePickerDialogFields = dpd.getClass().getDeclaredFields();
+                for (java.lang.reflect.Field datePickerDialogField : datePickerDialogFields) {
+                    if (datePickerDialogField.getName().equals("mDatePicker")) {
+                        datePickerDialogField.setAccessible(true);
+                        date_picker = (DatePicker) datePickerDialogField.get(dpd);
+                        java.lang.reflect.Field[] datePickerFields = datePickerDialogField.getType().getDeclaredFields();
+                        for (java.lang.reflect.Field datePickerField : datePickerFields) {
+                            Log.i("test", datePickerField.getName());
+                            if ("mDaySpinner".equals(datePickerField.getName())) {
+                                datePickerField.setAccessible(true);
+                                Object dayPicker = datePickerField.get(date_picker);
+                                ((View) dayPicker).setVisibility(View.GONE);
+                            }
+                        }
+                    }
+                    if(datePickerDialogField.getName().equals("mTitle")){
+                        datePickerDialogField.setAccessible(true);
+                    }
+                }
+
+            }
+            catch (Exception ex) {
+            }*/
+            return dpd;
+
+
+
+            /*DatePicker datePicker = (DatePicker) datePickerDialogField.get(dpd);
+            Field datePickerFields[] = datePickerDialogField.getType().getDeclaredFields();
+            for (Field datePickerField : datePickerFields) {
+                if ("mDayPicker".equals(datePickerField.getName())) {
+                    datePickerField.setAccessible(true);
+                    Object dayPicker = new Object();
+                    dayPicker = datePickerField.get(datePicker);
+                    ((View) dayPicker).setVisibility(View.GONE);
+                }
+            }*/
+            /*return new DatePickerDialog(this, mDateSetListenerFor, int_year,
+                    int_month, int_date);*/
+        }
+        return null;
+    }
+
+    DatePickerDialog.OnDateSetListener mDateSetListenerFor = new DatePickerDialog.OnDateSetListener() {
+        public void onDateSet(DatePicker view, int year, int monthOfYear,
+                              int dayOfMonth) {
+
+            int_year = year;
+            int_month = monthOfYear;
+
+            //get last day of month
+            Calendar cal = new GregorianCalendar();
+            cal.set(Calendar.DATE, dayOfMonth);
+            cal.set(Calendar.MONTH, monthOfYear);
+            cal.set(Calendar.YEAR, year);
+
+                /*lastDate = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+                firstDate = 1;
+                displayDate();*/
+
+        }
+    };
 
 
     // Detect when the back button is pressed
