@@ -97,72 +97,7 @@ public class HomeScreen extends AppCompatActivity {
                     public boolean onNavigationItemSelected(MenuItem menuItem) {
                         menuItem.setChecked(true);
                         mDrawerLayout.closeDrawers();
-                        /*switch (menuItem.getItemId()) {
-                            case android.R.id.home:
-                                mDrawerLayout.openDrawer(GravityCompat.START);
-                                return true;
-                            case R.id.nav_home:
-                                startActivity(new Intent(getApplicationContext(), DashBoard.class));
-                                return true;
-                            case R.id.nav_orders:
-                                Intent nwOrder = new Intent(getApplicationContext(), AddCustomerActivity.class);
-                                startActivity(nwOrder);
-                                return true;
 
-                            case R.id.nav_new_orders:
-                                Intent intCatSqlite = new Intent(getApplicationContext(), CategoryActivitySqlite.class);
-                                startActivity(intCatSqlite);
-                                return true;
-
-                            case R.id.nav_reports:
-                                Intent intRe = new Intent(getApplicationContext(), ReportsDialog.class);
-                                startActivity(intRe);
-                                return true;
-
-                            case R.id.nav_products:
-                                startActivity(new Intent(getApplicationContext(), ProductDetailsSqlite.class));
-                                return true;
-
-                            case R.id.nav_media:
-                                Intent intMe = new Intent(getApplicationContext(), MediaActivityGrid.class);
-                                startActivity(intMe);
-                                return true;
-
-                            case R.id.nav_sync:
-                                // Launch Sync Screen
-                                if (isInternetPresent) {
-                                    Intent srv = new Intent(getApplicationContext(), ProductsSync.class);
-                                    setProgressBarIndeterminateVisibility(true);
-                                    getApplicationContext().startService(srv);
-                                    Toast.makeText(getApplicationContext(), "Syncing...Please wait!",
-                                            Toast.LENGTH_LONG).show();
-                                } else {
-                                    alert_cs.showAlertDialog(HomeScreen.this,
-                                            "No Internet Connection",
-                                            "Ecatalogue requires a network connection to sync, \n" +
-                                                    "Please confirm data connection is on and you have sufficient credit.", false);
-                                }
-                                break;
-
-                            case R.id.nav_deliveries:
-                                Intent intDeli = new Intent(getApplicationContext(), DeliveryAgentsHistory.class);
-                                startActivity(intDeli);
-                                return true;
-
-                            case R.id.nav_about:
-                                Intent intAbt = new Intent(getApplicationContext(), AboutActivity.class);
-                                startActivity(intAbt);
-                                return true;
-
-                            case R.id.nav_logout:
-                                Toast.makeText(getApplicationContext(), "Logged Out!", Toast.LENGTH_LONG).show();
-                                session.logoutUser();
-                                dbConnector.deleteUserType();
-                                return true;
-
-                            default:
-                                break;
-                        }*/
                         if (menuItem.getItemId() == android.R.id.home){
                             mDrawerLayout.openDrawer(GravityCompat.START);
                             return true;

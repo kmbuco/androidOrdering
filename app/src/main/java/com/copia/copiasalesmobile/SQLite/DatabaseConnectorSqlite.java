@@ -21,7 +21,7 @@ public class DatabaseConnectorSqlite {
     private static final String TAG = DatabaseConnectorSqlite.class.getSimpleName();
 
     public DatabaseConnectorSqlite(Context context) {
-        dbOpenHelper = new DatabaseOpenHelperSqlite(context, DB_NAME, null, 1);
+        dbOpenHelper = new DatabaseOpenHelperSqlite(context, DB_NAME, null, 3);
     }
 
     public void open() throws SQLException {
@@ -397,7 +397,7 @@ public class DatabaseConnectorSqlite {
             sql += " LIMIT 30";
 
 
-        Log.e("the order sql : ", sql);
+        Log.e("the Order sql : ", sql);
 
         open();
 
@@ -433,10 +433,16 @@ public class DatabaseConnectorSqlite {
         return ObjectItemData;
     }
 
-    //order operations
+
+    public Cursor getOrder(String sCPhone) {
+        return database.query("order_table", new String[]{"_id", "cust_phone_", "date_time_", "type_","expected_delivery_date_","order_status_"}, "cust_phone_" + " = '" + sCPhone + "'", null, null, null, null);
+    }
+
+    //Order operations
     public Cursor getOrderID(String sCPhone) {
         return database.query("order_table", new String[]{"_id"}, "cust_phone_" + " = '" + sCPhone + "'", null, null, null, null);
     }
+
 
     public Cursor getAllOrderTableLines(String sOrderID) {
 
@@ -512,9 +518,24 @@ public class DatabaseConnectorSqlite {
     }
 
     public Cursor getAllOrders() {
-        return database.query("order_table", new String[]{"_id", "cust_phone_", "date_time_", "type_"}, null,
+        return database.query("order_table", new String[]{"_id", "cust_phone_", "date_time_", "type_","expected_delivery_date_","order_status_"}, null,
                 null, null, null, "_id");
     }
+
+    public Cursor getAllPendingOrders() {
+        return database.query("order_table", new String[]{"_id", "cust_phone_", "date_time_", "type_","expected_delivery_date_","order_status_"}, "order_status_" + " = 0",
+                null, null, null, "_id");
+    }
+    public Cursor getSentOrders() {
+        return database.query("order_table", new String[]{"_id", "cust_phone_", "date_time_", "type_","expected_delivery_date_","order_status_"}, "order_status_" + " = 1",
+                null, null, null, "_id");
+    }
+    public Cursor getSyncOrders() {
+        return database.query("order_table", new String[]{"_id", "cust_phone_", "date_time_", "type_","expected_delivery_date_","order_status_"}, "order_status_" + " = 2",
+                null, null, null, "_id");
+    }
+
+
 
     public Cursor checkPhoneExists(String sCPhone) {
         return database.query("order_table", null, "cust_phone_" + " = '" + sCPhone + "'", null, null, null, null);
@@ -526,21 +547,25 @@ public class DatabaseConnectorSqlite {
      * @param sDateTime
      */
 
-    public void insertOrderTable(String sPhone, String sDateTime, String sType) {
+    public void insertOrderTable(String sPhone, String sDateTime, String sType,String sDeliveryDate,String sStatus) {
         ContentValues newCon = new ContentValues();
         newCon.put("cust_phone_", sPhone);
         newCon.put("date_time_", sDateTime);
         newCon.put("type_", sType);
+        newCon.put("expected_delivery_date_", sDeliveryDate);
+        newCon.put("order_status_", sStatus);
 
         open();
         database.insert("order_table", null, newCon);
         close();
     }
 
-    public void updateOrderTable(String sOrderID, String sPhone, String sDateTime) {
+    public void updateOrderTable(String sOrderID, String sPhone, String sDateTime,String sDeliveryDate,String sStatus) {
         ContentValues editCon = new ContentValues();
         editCon.put("cust_phone_", sPhone);
         editCon.put("date_time_", sDateTime);
+        editCon.put("expected_delivery_date_",sDeliveryDate);
+        editCon.put("order_status_", sStatus);
 
         open();
         //database.update("order_table", editCon, "_id" +" = '"+sOrderID+"'", null);

@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
 import android.support.v4.widget.CursorAdapter;
@@ -62,6 +63,9 @@ public class CustomersOrdersFragment extends ListFragment {
         conListView.setOnItemClickListener(viewConListener);
         conListView.setOnItemLongClickListener(viewConListenerLong);
 
+
+
+
         tvPhone = (TextView) getActivity().findViewById(R.id.pending_list_cust_phone);
         tvDateTime = (TextView) getActivity().findViewById(R.id.pending_list_date_time);
 
@@ -74,10 +78,20 @@ public class CustomersOrdersFragment extends ListFragment {
 
     }
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.listview_main, container, false);
+        View rootView = inflater.inflate(R.layout.listview_order_main, container, false);
+        FloatingActionButton fab = (FloatingActionButton)rootView.findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getActivity(), AddCustomerActivity.class);
+                startActivity(i);
+            }
+        });
+        return rootView;
     }
 
     @Override
@@ -114,7 +128,8 @@ public class CustomersOrdersFragment extends ListFragment {
         protected Cursor doInBackground(Object... params) {
             dbConnector.open();
             try {
-                return dbConnector.getAllOrders();
+                //return dbConnector.getAllOrders();
+                return dbConnector.getSentOrders();
             } catch (Exception e) {
                 return null;
             }
@@ -237,7 +252,6 @@ public class CustomersOrdersFragment extends ListFragment {
 
         alert.setNegativeButton(R.string.cancel_btn, null).show();
     }
-
 
     private class ClearOrders extends AsyncTask<Object, Object, Cursor> {
         DatabaseConnectorSqlite dbConnector = new DatabaseConnectorSqlite(getActivity());

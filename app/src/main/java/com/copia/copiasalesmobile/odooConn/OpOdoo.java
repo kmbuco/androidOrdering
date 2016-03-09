@@ -82,8 +82,12 @@ public class OpOdoo{
             agent.setName(hash.get("name").toString());
             agent.setPhone(hash.get("phone").toString());
             agent.setId(hash.get("id").toString());
-            agent.setWrite_date(hash.get("write_date").toString());
-            agent.setExperiment_id(hash.get("experiment_id").toString());
+            if(hash.get("write_date") != null){
+                agent.setWrite_date(hash.get("write_date").toString());
+            }
+            if(hash.get("experiment_id")!=null) {
+                agent.setExperiment_id(hash.get("experiment_id").toString());
+            }
             agents.add(agent);
             Log.e("Them name",hash.get("name").toString());
         }

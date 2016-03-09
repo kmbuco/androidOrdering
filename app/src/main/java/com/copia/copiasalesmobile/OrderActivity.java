@@ -53,7 +53,9 @@ import com.copia.copiasalesmobile.utilities.CustomAutoCompleteAgentTextChangedLi
 import com.copia.copiasalesmobile.utilities.CustomAutoCompleteTextChangedListenerAdd;
 import com.copia.copiasalesmobile.utilities.CustomAutoCompleteView;
 import com.copia.copiasalesmobile.utilities.NavItem;
+import com.copia.copiasalesmobile.utilities.Order;
 import com.copia.copiasalesmobile.utilities.ProdSearchObject;
+import com.copia.copiasalesmobile.utilities.getOrders;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -76,7 +78,7 @@ public class OrderActivity extends AbstractBaseActivity {
     int commPercent;
     String sCode = "", sName = "", sComm = "", sPrice = "", sDesc = "", sImage = "", sCopiaID = "", slabel = "", sTotal = "";
     public String sOrderID = "", sCPhone = "", sNewOrderID = "", sNewCustomer = "", sEnterCode = "",
-            sCheckCode = "", sCheckCopiaID = "", sCountValue = "", sCountUpdate = "", sType = "";
+            sCheckCode = "", sCheckCopiaID = "", sCountValue = "", sCountUpdate = "", sType = "", sDeliveryDate = "";
     public ImageView imageView;
     public EditText edQuantity;
     String strSQuantity;
@@ -137,6 +139,7 @@ public class OrderActivity extends AbstractBaseActivity {
             //sOrderID = String.valueOf(rowID);
             sCPhone = extras.getString("cphone");
             sOrderID = extras.getString("order_id");
+            sDeliveryDate = extras.getString("cdeliverydate");
             sType = extras.getString("ctype");
             setTitle("Order List for " + sCPhone);
 
@@ -324,7 +327,7 @@ public class OrderActivity extends AbstractBaseActivity {
             }
         });
 
-        //send the order here
+        //send the Order here
 
         btnSend = (Button) findViewById(R.id.btnEnterSendOrder);
         btnSend.setOnClickListener(new View.OnClickListener() {
@@ -343,13 +346,13 @@ public class OrderActivity extends AbstractBaseActivity {
                         alert_.showAlertDialog(OrderActivity.this,
                                 "Submission Failed...",
                                 "Customer not added"
-                                        + "\n" + "Please add customer phone number to complete order :-)", false);
+                                        + "\n" + "Please add customer phone number to complete Order :-)", false);
                     }
                 } else {
                     alert_.showAlertDialog(OrderActivity.this,
                             "Submission Failed...",
-                            "There are no items available to send an order"
-                                    + "\n" + "Please add items to complete order :-)", false);
+                            "There are no items available to send an Order"
+                                    + "\n" + "Please add items to complete Order :-)", false);
                 }
             }
         });
@@ -945,417 +948,34 @@ public class OrderActivity extends AbstractBaseActivity {
 
                 strAllOrders = resultSet.toString();
 
-                if (cbLayaway.isChecked() && sType.equals("normal")) {
-                    try {
-                        sendSMSLayaway(sCPhone, strAllOrders);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    Log.e("()()()()", "Layaway is checked! and " + sType);
-                } else if (!cbLayaway.isChecked() && sType.equals("normal")) {
-                    try {
-                        sendSMS(sCPhone, strAllOrders);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    Log.e("()()()()", "Layaway is not checked! and " + sType);
-                } else if (!cbLayaway.isChecked() && sType.equals("video")) {
-                    /*try {
-                        //sendSMSVideo(sCPhone, strAllOrders);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }*/
-                    Log.e("()()()()", "Layaway is not checked! and " + sType);
-                } else if (cbLayaway.isChecked() && sType.equals("video")) {
-                   /* try {
-                        //sendSMSVideoLayaway(sCPhone, strAllOrders);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }*/
-                    //Log.e("()()()()", "Layaway is checked! and " + sType);
-
-                }
                 Log.e("All the orders are: ",strAllOrders);
                 Log.e("All the prod codes: ",product_codes);
-                //send the order using xmlRpc
-                Functions func = new Functions();
+                //send the Order using xmlRpc
+                Functions func = new Functions(dbConnector);
                 //createOrder(String productIds, int agentIds, String phone, String quantities)
 
-
-
                 Log.e("The product IDs: ", product_codes);
-                func.createOrder(product_codes, sAgentId ,sCPhone,product_quantity);
+                if(utilityConn.isOnline()){
+                    func.createOrder(product_codes, sAgentId ,sCPhone,product_quantity,sDeliveryDate);
+                }else{
+                    getOrders getorder = new getOrders();
+                    Order order = getorder.getOrder(dbConnector, sCPhone);
+                    String date_time = order.getDate_time_();
+                    //store the order to be sent later
+                    dbConnector.updateOrderTable(sOrderID,
+                            sCPhone,
+                            date_time,
+                            sDeliveryDate
+                            ,"1");
+                }
+
                 return null;
             }
         }
 
-            public void sendSMS(final String sCPhone, String strAllOrders) throws JSONException {
-                Log.e("SmsManager: ", "Started...");
-                String SENT = "SMS sent";
-                String DELIVERED = "SMS delivered";
-                PendingIntent sentPI = PendingIntent.getBroadcast(OrderActivity.this, 0, new Intent(SENT), 0);
-                PendingIntent deliveredPI = PendingIntent.getBroadcast(OrderActivity.this, 0, new Intent(DELIVERED), 0);
-
-                registerReceiver(new BroadcastReceiver() {
-
-                    @Override
-                    public void onReceive(Context arg0, Intent arg1) {
-                        // TODO Auto-generated method stub
-                    /*switch (getResultCode()) {
-                        case Activity.RESULT_OK:
-                            Log.e("SmsManager: ", "Result Ok");
-                            //tableLayout.removeAllViews();
-                            Toast.makeText(getBaseContext(), "Order Sent", Toast.LENGTH_SHORT).show();
-                            //Save Common
-                            new checkCopiaIDExists().execute();
-
-                            //Delete OrderID and Phone from Order Table and Items with same OrderID from Order Lines Table
-                            DatabaseConnectorSqlite dbConnector = new DatabaseConnectorSqlite(EnterItemsActivity.this);
-                            dbConnector.deleteOrder(sOrderID);
-                            dbConnector.deleteOrderLines(sOrderID);
 
 
-                            Intent inHome = new Intent(getApplicationContext(), HomeScreen.class);
-                            inHome.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                            startActivity(inHome);
-                            break;
 
-                        case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
-                            //Toast.makeText(getBaseContext(), "Generic Failure, Please try again!", Toast.LENGTH_LONG).show();
-                            Log.e("SmsManager: ", "Generic Failure");
-                            alert_.showAlertDialog(EnterItemsActivity.this,
-                                    "Generic Failure!",
-                                    "Order was not sent, Please try again :-)", false);
-                            tableLayout.removeAllViews();
-                            buildTable();
-                            try {
-                                getGrandTotal();
-                            } catch (JSONException e) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
-                            }
-                            btnSendOrder.setEnabled(true);
-                            btnSendOrder.setVisibility(View.VISIBLE);
-                            break;
-
-                        case SmsManager.RESULT_ERROR_NO_SERVICE:
-                            //Toast.makeText(getBaseContext(), "No Service, Please try again!", Toast.LENGTH_LONG).show();
-                            Log.e("SmsManager: ", "No Service");
-                            alert_.showAlertDialog(EnterItemsActivity.this,
-                                    "No Service!",
-                                    "Order was not sent, Please check if you have mobile network connection and try again :-)", false);
-                            tableLayout.removeAllViews();
-                            buildTable();
-                            try {
-                                getGrandTotal();
-                            } catch (JSONException e) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
-                            }
-                            btnSendOrder.setEnabled(true);
-                            btnSendOrder.setVisibility(View.VISIBLE);
-                            break;
-                    }*/
-                        if (getResultCode() == Activity.RESULT_OK) {
-                            Log.e("SmsManager: ", "Result Ok");
-                            //tableLayout.removeAllViews();
-                            Toast.makeText(getBaseContext(), "Order Sent", Toast.LENGTH_SHORT).show();
-                            //Save Common
-                            new checkCopiaIDExists().execute();
-
-                            //Delete OrderID and Phone from Order Table and Items with same OrderID from Order Lines Table
-                            DatabaseConnectorSqlite dbConnector = new DatabaseConnectorSqlite(OrderActivity.this);
-                            dbConnector.deleteOrder(sOrderID);
-                            dbConnector.deleteOrderLines(sOrderID);
-
-
-                            Intent inHome = new Intent(getApplicationContext(), HomeScreen.class);
-                            inHome.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                            startActivity(inHome);
-                        } else if (getResultCode() == SmsManager.RESULT_ERROR_GENERIC_FAILURE) {
-                            //Toast.makeText(getBaseContext(), "Generic Failure, Please try again!", Toast.LENGTH_LONG).show();
-                            Log.e("SmsManager: ", "Generic Failure");
-                            alert_.showAlertDialog(OrderActivity.this,
-                                    "Generic Failure!",
-                                    "Order was not sent, Please try again :-)", false);
-                            tableLayout.removeAllViews();
-                            buildTable();
-                            try {
-                                getGrandTotal();
-                            } catch (JSONException e) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
-                            }
-                            btnSendOrder.setEnabled(true);
-                            btnSendOrder.setVisibility(View.VISIBLE);
-                        } else if (getResultCode() == SmsManager.RESULT_ERROR_NO_SERVICE) {
-                            //Toast.makeText(getBaseContext(), "No Service, Please try again!", Toast.LENGTH_LONG).show();
-                            Log.e("SmsManager: ", "No Service");
-                            alert_.showAlertDialog(OrderActivity.this,
-                                    "No Service!",
-                                    "Order was not sent, Please check if you have mobile network connection and try again :-)", false);
-                            tableLayout.removeAllViews();
-                            buildTable();
-                            try {
-                                getGrandTotal();
-                            } catch (JSONException e) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
-                            }
-                            btnSendOrder.setEnabled(true);
-                            btnSendOrder.setVisibility(View.VISIBLE);
-                        }
-                    }
-                }, new IntentFilter(SENT));
-
-                registerReceiver(new BroadcastReceiver() {
-
-                    @Override
-                    public void onReceive(Context ctx, Intent arg1) {
-                        // TODO Auto-generated method stub
-                    /*switch (getResultCode()) {
-                        case Activity.RESULT_OK:
-
-                            //Delete OrderID and Phone from Order Table and Items with same OrderID from Order Lines Table
-                            DatabaseConnectorSqlite dbConnector = new DatabaseConnectorSqlite(EnterItemsActivity.this);
-                            //dbConnector.deleteOrder(sOrderID);
-                            //dbConnector.deleteOrderLines(sOrderID);
-
-                            //Call HomeScreen
-//						Intent hmy = new Intent(getApplicationContext(), HomeScreen.class);
-//						startActivity(hmy);
-
-                            Toast.makeText(getBaseContext(), "Order Delivered", Toast.LENGTH_SHORT).show();
-                            break;
-
-                        case Activity.RESULT_CANCELED:
-                            //Toast.makeText(getBaseContext(), "SMS not Delivered, Please try again!", Toast.LENGTH_LONG).show();
-                            alert_.showAlertDialog(EnterItemsActivity.this,
-                                    "Order was not Delivered!",
-                                    "Please wait for a while for order confirmation :-) \n If no response try and resend Order", false);
-                            break;
-                    }*/
-                        if (getResultCode() == Activity.RESULT_OK) {
-                            //Delete OrderID and Phone from Order Table and Items with same OrderID from Order Lines Table
-                            DatabaseConnectorSqlite dbConnector = new DatabaseConnectorSqlite(OrderActivity.this);
-                            //dbConnector.deleteOrder(sOrderID);
-                            //dbConnector.deleteOrderLines(sOrderID);
-
-                            //Call HomeScreen
-//						Intent hmy = new Intent(getApplicationContext(), HomeScreen.class);
-//						startActivity(hmy);
-
-                            Toast.makeText(getBaseContext(), "Order Delivered", Toast.LENGTH_SHORT).show();
-                        }
-                        if (getResultCode() == Activity.RESULT_CANCELED) {
-                            //Toast.makeText(getBaseContext(), "SMS not Delivered, Please try again!", Toast.LENGTH_LONG).show();
-                            alert_.showAlertDialog(OrderActivity.this,
-                                    "Order was not Delivered!",
-                                    "Please wait for a while for order confirmation :-) \n If no response try and resend Order", false);
-                        }
-                    }
-                }, new IntentFilter(DELIVERED));
-
-                JSONArray arr = new JSONArray(strAllOrders);
-
-                for (int i = 0; i < arr.length(); i++) {
-                    JSONObject c = arr.getJSONObject(i);
-
-                    String smsCode = c.getString(TAG_CODE);
-                    String smsQuantity = c.getString(TAG_QUANTITY);
-
-                    //myOrder += smsCode + " " + smsQuantity + " ";
-                }
-
-                //Log.e("SMS SENT", "Copia ECatalogue " + sCPhone + " " + myOrder);
-
-                SmsManager sms = SmsManager.getDefault();
-                //sms.sendDataMessage(destinationAddress, scAddress, destinationPort, data, sentIntent, deliveryIntent);
-                //sms.sendTextMessage(sShortCode, null, "Copia ECatalogue " + sCPhone + " " + myOrder, sentPI, deliveredPI);
-            }
-
-
-            public void sendSMSLayaway(final String sCPhone, String strAllOrders) throws JSONException {
-                Log.e("SmsManager: ", "Started...");
-                String SENT = "SMS sent";
-                String DELIVERED = "SMS delivered";
-                PendingIntent sentPI = PendingIntent.getBroadcast(OrderActivity.this, 0, new Intent(SENT), 0);
-                PendingIntent deliveredPI = PendingIntent.getBroadcast(OrderActivity.this, 0, new Intent(DELIVERED), 0);
-
-                registerReceiver(new BroadcastReceiver() {
-                    @Override
-                    public void onReceive(Context arg0, Intent arg1) {
-                        // TODO Auto-generated method stub
-                    /*switch (getResultCode()) {
-                        case Activity.RESULT_OK:
-                            Log.e("SmsManager: ", "Result Ok");
-                            //tableLayout.removeAllViews();
-                            Toast.makeText(getBaseContext(), "Order Sent", Toast.LENGTH_SHORT).show();
-                            //Save Common
-                            new checkCopiaIDExists().execute();
-
-                            //Delete OrderID and Phone from Order Table and Items with same OrderID from Order Lines Table
-                            DatabaseConnectorSqlite dbConnector = new DatabaseConnectorSqlite(EnterItemsActivity.this);
-                            dbConnector.deleteOrder(sOrderID);
-                            dbConnector.deleteOrderLines(sOrderID);
-
-                            Intent inHome = new Intent(getApplicationContext(), HomeScreen.class);
-                            inHome.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                            startActivity(inHome);
-                            break;
-
-                        case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
-                            //Toast.makeText(getBaseContext(), "Generic Failure, Please try again!", Toast.LENGTH_LONG).show();
-                            Log.e("SmsManager: ", "Generic Failure");
-                            alert_.showAlertDialog(EnterItemsActivity.this,
-                                    "Generic Failure!",
-                                    "Order was not sent, Please try again :-)", false);
-                            tableLayout.removeAllViews();
-                            buildTable();
-                            try {
-                                getGrandTotal();
-                            } catch (JSONException e) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
-                            }
-                            btnSendOrder.setEnabled(true);
-                            btnSendOrder.setVisibility(View.VISIBLE);
-                            break;
-
-                        case SmsManager.RESULT_ERROR_NO_SERVICE:
-                            //Toast.makeText(getBaseContext(), "No Service, Please try again!", Toast.LENGTH_LONG).show();
-                            Log.e("SmsManager: ", "No Service");
-                            alert_.showAlertDialog(EnterItemsActivity.this,
-                                    "No Service!",
-                                    "Order was not sent, Please check if you have mobile network connection and try again :-)", false);
-                            tableLayout.removeAllViews();
-                            buildTable();
-                            try {
-                                getGrandTotal();
-                            } catch (JSONException e) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
-                            }
-                            btnSendOrder.setEnabled(true);
-                            btnSendOrder.setVisibility(View.VISIBLE);
-                            break;
-                    }*/
-                        if (getResultCode() == Activity.RESULT_OK) {
-                            Log.e("SmsManager: ", "Result Ok");
-                            //tableLayout.removeAllViews();
-                            Toast.makeText(getBaseContext(), "Order Sent", Toast.LENGTH_SHORT).show();
-                            //Save Common
-                            new checkCopiaIDExists().execute();
-
-                            //Delete OrderID and Phone from Order Table and Items with same OrderID from Order Lines Table
-                            DatabaseConnectorSqlite dbConnector = new DatabaseConnectorSqlite(OrderActivity.this);
-                            dbConnector.deleteOrder(sOrderID);
-                            dbConnector.deleteOrderLines(sOrderID);
-
-                            Intent inHome = new Intent(getApplicationContext(), HomeScreen.class);
-                            inHome.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                            startActivity(inHome);
-                        } else if (getResultCode() == SmsManager.RESULT_ERROR_GENERIC_FAILURE) {
-                            //Toast.makeText(getBaseContext(), "Generic Failure, Please try again!", Toast.LENGTH_LONG).show();
-                            Log.e("SmsManager: ", "Generic Failure");
-                            alert_.showAlertDialog(OrderActivity.this,
-                                    "Generic Failure!",
-                                    "Order was not sent, Please try again :-)", false);
-                            tableLayout.removeAllViews();
-                            buildTable();
-                            try {
-                                getGrandTotal();
-                            } catch (JSONException e) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
-                            }
-                            btnSendOrder.setEnabled(true);
-                            btnSendOrder.setVisibility(View.VISIBLE);
-                        } else if (getResultCode() == SmsManager.RESULT_ERROR_NO_SERVICE) {
-                            //Toast.makeText(getBaseContext(), "No Service, Please try again!", Toast.LENGTH_LONG).show();
-                            Log.e("SmsManager: ", "No Service");
-                            alert_.showAlertDialog(OrderActivity.this,
-                                    "No Service!",
-                                    "Order was not sent, Please check if you have mobile network connection and try again :-)", false);
-                            tableLayout.removeAllViews();
-                            buildTable();
-                            try {
-                                getGrandTotal();
-                            } catch (JSONException e) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
-                            }
-                            btnSendOrder.setEnabled(true);
-                            btnSendOrder.setVisibility(View.VISIBLE);
-                        }
-                    }
-                }, new IntentFilter(SENT));
-
-                registerReceiver(new BroadcastReceiver() {
-
-                    @Override
-                    public void onReceive(Context ctx, Intent arg1) {
-                        // TODO Auto-generated method stub
-                    /*switch (getResultCode()) {
-                        case Activity.RESULT_OK:
-
-                            //Delete OrderID and Phone from Order Table and Items with same OrderID from Order Lines Table
-                            DatabaseConnectorSqlite dbConnector = new DatabaseConnectorSqlite(EnterItemsActivity.this);
-                            //dbConnector.deleteOrder(sOrderID);
-                            //dbConnector.deleteOrderLines(sOrderID);
-
-                            //Call HomeScreen
-//						Intent hmy = new Intent(getApplicationContext(), HomeScreen.class);
-//						startActivity(hmy);
-
-                            Toast.makeText(getBaseContext(), "Order Delivered", Toast.LENGTH_SHORT).show();
-                            break;
-
-                        case Activity.RESULT_CANCELED:
-                            //Toast.makeText(getBaseContext(), "SMS not Delivered, Please try again!", Toast.LENGTH_LONG).show();
-                            alert_.showAlertDialog(EnterItemsActivity.this,
-                                    "Order was not Delivered!",
-                                    "Please wait for a while for order confirmation :-) \n If no response try and resend Order", false);
-                            break;
-                    }*/
-                        if (getResultCode() == Activity.RESULT_OK) {
-                            //Delete OrderID and Phone from Order Table and Items with same OrderID from Order Lines Table
-                            DatabaseConnectorSqlite dbConnector = new DatabaseConnectorSqlite(OrderActivity.this);
-                            //dbConnector.deleteOrder(sOrderID);
-                            //dbConnector.deleteOrderLines(sOrderID);
-
-                            //Call HomeScreen
-//						Intent hmy = new Intent(getApplicationContext(), HomeScreen.class);
-//						startActivity(hmy);
-
-                            Toast.makeText(getBaseContext(), "Order Delivered", Toast.LENGTH_SHORT).show();
-                        } else if (getResultCode() == Activity.RESULT_CANCELED) {
-                            //Toast.makeText(getBaseContext(), "SMS not Delivered, Please try again!", Toast.LENGTH_LONG).show();
-                            alert_.showAlertDialog(OrderActivity.this,
-                                    "Order was not Delivered!",
-                                    "Please wait for a while for order confirmation :-) \n If no response try and resend Order", false);
-                        }
-                    }
-                }, new IntentFilter(DELIVERED));
-
-                JSONArray arr = new JSONArray(strAllOrders);
-
-                for (int i = 0; i < arr.length(); i++) {
-                    JSONObject c = arr.getJSONObject(i);
-
-                    String smsCode = c.getString(TAG_CODE);
-                    String smsQuantity = c.getString(TAG_QUANTITY);
-
-                    //myOrder += smsCode + " " + smsQuantity + " ";
-                }
-
-                //Log.e("SMS SENT", myOrder);
-
-                SmsManager sms = SmsManager.getDefault();
-                //sms.sendDataMessage(destinationAddress, scAddress, destinationPort, data, sentIntent, deliveryIntent);
-                //sms.sendTextMessage(sShortCode, null, "Copia ECatalogue Layaway " + sCPhone + " " + myOrder, sentPI, deliveredPI);
-
-            }
 
     private class checkCopiaIDExists extends AsyncTask<String, Object, Cursor> {
         DatabaseConnectorSqlite dbConnector = new DatabaseConnectorSqlite(OrderActivity.this);

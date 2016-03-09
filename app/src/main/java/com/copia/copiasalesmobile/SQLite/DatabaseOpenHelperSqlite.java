@@ -19,7 +19,7 @@ public class DatabaseOpenHelperSqlite extends SQLiteOpenHelper {
         String createUser= "CREATE TABLE lite_user(_id, user_name, password, write_date_);";
         String createProductImage= "CREATE TABLE product_image(_id, product_id_, image, date_time);";
         String createSyncProductLite = "CREATE TABLE products_sync_lite (_id integer primary key autoincrement, code_, name_, price_, comm_, cat_id_, create_date_, write_date_, copia_product_id_ INTEGER, image_id_, desc_,prod_type, sales_volume);";
-        String createOrderTable = "CREATE TABLE order_table (_id integer primary key autoincrement, cust_phone_, date_time_, type_);";
+        String createOrderTable = "CREATE TABLE order_table (_id integer primary key autoincrement, cust_phone_, date_time_, type_, expected_delivery_date_, order_status_);";
         String createOrderTableLines = "CREATE TABLE order_table_lines (_id integer primary key autoincrement, code_, name_, price_, comm_, quantity_, total_, date_time_, order_id_, desc_, copia_product_id_);";
         String createCommonTable = "CREATE TABLE common_table (_id integer primary key autoincrement, copia_product_id_, count_);";
 
@@ -42,6 +42,13 @@ public class DatabaseOpenHelperSqlite extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + "lite_user");
         db.execSQL("DROP TABLE IF EXISTS " + "product_image");
         db.execSQL("DROP TABLE IF EXISTS " + "products_sync_lite");
+        db.execSQL("DROP TABLE IF EXISTS " + "order_table");
+        db.execSQL("DROP TABLE IF EXISTS " + "order_table_lines");
+        db.execSQL("DROP TABLE IF EXISTS " + "common_table");
+
+
+        // Create tables again
+        onCreate(db);
     }
 
 }

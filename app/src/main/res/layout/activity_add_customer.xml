@@ -114,8 +114,9 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textSize="20sp"
             android:text="only institutional sales associates set the delivery date"
-            android:textColor="@color/colorAccentyellow"
+            android:textColor="@color/colorAccentred"
             android:layout_gravity="bottom"/>
     </LinearLayout>
 

@@ -77,7 +77,9 @@ public class ServiceSyncAgent extends Service {
             agents = operation.getAllAgents(write_date);
             for(Agent ag:agents){
                 //String sUid, String sName, String sWriteDate, String sPhone
-                Log.e("Get them date: ",ag.getWrite_date());
+                if(ag.getWrite_date()!= null){
+                    Log.e("Get them date: ",ag.getWrite_date());
+                }
                 dbConn.insertAgentTable(ag.getId(),ag.getName(),ag.getWrite_date(), ag.getPhone(),ag.getExperiment_id());
             }
             return null;

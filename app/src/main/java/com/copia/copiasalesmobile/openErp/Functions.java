@@ -1,6 +1,11 @@
 package com.copia.copiasalesmobile.openErp;
 
+import android.database.Cursor;
 import android.util.Log;
+
+import com.copia.copiasalesmobile.SQLite.DatabaseConnectorSqlite;
+import com.copia.copiasalesmobile.utilities.Order;
+import com.copia.copiasalesmobile.utilities.getOrders;
 
 import org.apache.xmlrpc.client.XmlRpcClient;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
@@ -8,6 +13,7 @@ import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -18,17 +24,21 @@ import java.util.Vector;
  */
 public class Functions {
 
+    DatabaseConnectorSqlite dbconnector;
 
     static final String db = "copiaERP";
     static final String host = "http://52.89.125.104";
     static final int port = 8069;
     static final String password = "@dm1n2014_cop1a_erp";
+    String phone;
+    public Integer int_year, int_month, int_date, int_hour, int_min, int_sec;
     XmlRpcClient client;
     String mode = "SMS";
     Boolean layaway = false;
 
     //initialize global functions.
-    public Functions(){
+    public Functions(DatabaseConnectorSqlite dbconnector){
+        this.dbconnector = dbconnector;
         client = new XmlRpcClient();
         XmlRpcClientConfigImpl clientConfig = new XmlRpcClientConfigImpl();
         clientConfig.setEnabledForExtensions(true);
@@ -102,7 +112,7 @@ public class Functions {
         Object res = null;
         Object[] params = new Object[]{db, 1, password, tableName, "create", vals};
         try{
-            Log.e("The output is: ",params.toString());
+            Log.e("The output is: ", params.toString());
             res = client.execute("execute", params);
             id = Integer.parseInt(res.toString());
         }catch(Exception e){
@@ -113,10 +123,11 @@ public class Functions {
     }
 
     //place an
-    public void createOrder(String productIds, String agentIds, String phone, String quantities){
+    public void createOrder(String productIds, String agentIds, String phone, String quantities,String date_delivery){
         Object  [] prodDetails;
         Object  [] custDetails;
         Object  [] agentDetails;
+        this.phone = phone;
         int _shop_id = 0;
         int _user_id = 0;
 
@@ -221,9 +232,9 @@ public class Functions {
         custDetails = read(paramCustomer,custList,tableName);
 
 
-        //create the product order lines
+        //create the product Order lines
         Object res = null;
-        LinkedHashMap<String, Object> linked_vals = new LinkedHashMap<String, Object>();//use linkedHashMap to maintain order
+        LinkedHashMap<String, Object> linked_vals = new LinkedHashMap<String, Object>();//use linkedHashMap to maintain Order
 
         linked_vals = new LinkedHashMap<String, Object>();
 
@@ -234,8 +245,8 @@ public class Functions {
 
         List<Vector> linearArr1 = null;
         String bufferCreator="{";
-        for(Object prod:prodList){
-            HashMap hash = (HashMap)prod;
+        for(Object obj:prodList){
+            HashMap hash = (HashMap)obj;
             String prod_name = (String) hash.get("name");
             Double prod_price = (Double) hash.get("list_price");
             Object[] prod_objTax = (Object[]) hash.get("taxes_id"); //an object array
@@ -267,6 +278,12 @@ public class Functions {
 				    /*/|\because it is an array of objects*/
         System.out.println(linearArr);
 
+        getOrders getorder = new getOrders();
+        Order order = getorder.getOrder(dbconnector, phone);
+
+        String date_time = order.getDate_time_();
+        String expected_delivery_date = order.getExpected_delivery_date_();
+
         try{
             HashMap<String, Object> vals = new HashMap<String, Object>();
 
@@ -279,9 +296,9 @@ public class Functions {
             vals.put("partner_shipping_id",custId);
             vals.put("partner_invoice_id",custId);
             vals.put("vendor_partner_id",agentIds);
-            /*vals.put("date_order",date_order);
-            vals.put("copia_date_order",copia_date_order);
-            vals.put("date_delivery",date_delivery);*/
+            vals.put("date_order",date_time);
+            vals.put("copia_date_order",expected_delivery_date);
+            vals.put("date_delivery",expected_delivery_date);
             vals.put("order_line",linearArr);
             vals.put("mode",mode);
             vals.put("islayaway",layaway);
@@ -296,7 +313,7 @@ public class Functions {
             args.add(db);
             args.add(1);
             args.add(password);
-            args.add("sale.order");
+            args.add("sale.Order");
             args.add("create");
             args.add(vals);
             System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>check out the args<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
@@ -304,6 +321,11 @@ public class Functions {
             int result = 0;
             result = (int)client.execute("execute", args);
             System.out.println(" Them result is >>>>>>>>>>>>>>>>"+ result);
+            dbconnector.updateOrderTable(order.getOrder_id(),
+                    order.getCust_phone_(),
+                    order.getDate_time_(),
+                    order.getExpected_delivery_date_()
+                    , "1");
         }catch(Exception ex){
             ex.printStackTrace();
         }

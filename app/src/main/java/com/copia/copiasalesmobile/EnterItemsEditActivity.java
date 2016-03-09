@@ -122,7 +122,7 @@ public class EnterItemsEditActivity extends ActionBarActivity {
                     {
                         tvTotal.setText("0");
                         tvComm.setText("0");
-                        //Toast.makeText(getApplicationContext(), "Enter quantity to complete order :-)", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getApplicationContext(), "Enter quantity to complete Order :-)", Toast.LENGTH_SHORT).show();
                         //strSQuantity = "1";
                     }
                 }
