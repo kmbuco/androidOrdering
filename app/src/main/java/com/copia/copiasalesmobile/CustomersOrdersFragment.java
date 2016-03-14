@@ -129,7 +129,7 @@ public class CustomersOrdersFragment extends ListFragment {
             dbConnector.open();
             try {
                 //return dbConnector.getAllOrders();
-                return dbConnector.getSentOrders();
+                return dbConnector.getOrders("1");
             } catch (Exception e) {
                 return null;
             }

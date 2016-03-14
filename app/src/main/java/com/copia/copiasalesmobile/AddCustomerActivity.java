@@ -187,20 +187,21 @@ public class AddCustomerActivity extends AppCompatActivity {
                             DatabaseConnectorSqlite dbConnector = new DatabaseConnectorSqlite(
                                     AddCustomerActivity.this);
                             sDeliveryDate = getDeliveryDate();
+
                             if (getIntent().getExtras() == null) {
 
                                 dbConnector.insertOrderTable(
                                         edPhone.getText().toString().trim(),
-                                        tvDateTime.getText().toString(),
+                                        tvDateTime.getText().toString().trim(),
                                         sType,
                                         sDeliveryDate,
                                         "0");
                             } else {
                                 dbConnector.updateOrderTable(sOrderID,
                                         edPhone.getText().toString().trim(),
-                                        tvDateTime.getText().toString(),
+                                        tvDateTime.getText().toString().trim(),
                                         sDeliveryDate
-                                ,"0");
+                                        ,"0");
                             }
                             //finish();
                         }
@@ -218,12 +219,13 @@ public class AddCustomerActivity extends AppCompatActivity {
         String date = "";
         String current_date;
         String default_delivery_date;
+        getDateTime();
         final Calendar c = Calendar.getInstance();
         int_year = c.get(Calendar.YEAR);
         int_month = c.get(Calendar.MONTH);
         int_date = c.get(Calendar.DAY_OF_MONTH);
 
-        current_date = (new StringBuilder().append(int_year).append("-").append(int_month).append("-").append(int_date)).toString();
+        current_date = (new StringBuilder().append(int_year).append("-").append(int_month+1).append("-").append(int_date)).toString();
         Log.e("The current date is : ",current_date);
 
         if(tv_show_date_for.getText().toString().contains("eg")){
@@ -250,10 +252,11 @@ public class AddCustomerActivity extends AppCompatActivity {
     }
 
     private void displayDateTime() {
-        tvDateTime.setText(new StringBuilder()
-                // Month is 0 based so add 1
-                .append(int_year).append("-").append(int_month + 1).append("-").append(int_date)
-                .append("  ").append(int_hour).append(":").append(int_min).append(" ").append(hrs));
+
+            tvDateTime.setText(new StringBuilder()
+                    // Month is 0 based so add 1
+                    .append(int_year).append("-").append(int_month + 1).append("-").append(int_date));
+
     }
 
 

@@ -17,6 +17,8 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Vector;
 
 /**
@@ -33,7 +35,7 @@ public class Functions {
     String phone;
     public Integer int_year, int_month, int_date, int_hour, int_min, int_sec;
     XmlRpcClient client;
-    String mode = "SMS";
+    String mode = "ecatalog";
     Boolean layaway = false;
 
     //initialize global functions.
@@ -162,7 +164,9 @@ public class Functions {
             ArrayList ids = new ArrayList();
             ids.add(id);
             prodDetails =read(params, ids, tableName);
-            prodList.add(prodDetails);
+            Log.e("HHHHHHHHHHHHHHHHHH","HEHEHEHEHEHEHEHEHHEHEH");
+            Log.e("Them Prod Details:", prodDetails[0].toString());
+            prodList.add(prodDetails[0]);
         }
 
 
@@ -243,9 +247,15 @@ public class Functions {
         String[] quant = quantities.split(",");
         int x = 0;
 
-        List<Vector> linearArr1 = null;
+        Vector<Object> linearArr1 = new Vector<>();
+        Vector vec;
         String bufferCreator="{";
+        int z = prodList.size();
+        Map<String, Vector<Object>> n = new HashMap<String, Vector<Object>>();
+        int a = 1;
         for(Object obj:prodList){
+            Log.e("the objects",obj.toString());
+
             HashMap hash = (HashMap)obj;
             String prod_name = (String) hash.get("name");
             Double prod_price = (Double) hash.get("list_price");
@@ -254,57 +264,89 @@ public class Functions {
             int prod_id  = (int) hash.get("id");
             int prod_tax_id = (int) prod_objTax[0];
 
+            //do the iteration for the products here
+            //vals.put("ref", "MGA");
+            int Op1 = 6;
+            int Op2 = 0;
+
+            Vector<Object> taxArgs = new Vector<Object>();
+            taxArgs.add(Op1);
+            taxArgs.add(Op2);
+            taxArgs.add(prod_objTax);
+
+            Object[] taxObj = {taxArgs};
+
             String product_uom_qty = quant[x];
             x++;
             linked_vals.put("product_id", prod_id);
             linked_vals.put("name", prod_name);
             linked_vals.put("price_unit", prod_price);
-            linked_vals.put("tax_id",prod_objTax);
+            linked_vals.put("tax_id",taxObj);
             linked_vals.put("weight", prod_weight);
             linked_vals.put("product_uom_qty", product_uom_qty);
 
-            Vector<Object> linearg = new Vector<Object>();
+            Vector<Object> linearg = new Vector<>();
             linearg.add(0);
             linearg.add(0);
             linearg.add(linked_vals);
+            Log.e("Them Linear Args",linearg.toString());
+            n.put("n"+a,linearg);
             linearArr1.add(linearg);
+            a++;
         }
-        Vector[] linearArr = (Vector[]) linearArr1.toArray();
+
+        //Vector<Object>[] vect = (Vector[]) linearArr1.toArray();
+        //Log.e("The vec : ", vect.toString());
+
+        //Vector[] linearArr = linearArr1.toArray();
+
+        Object[] linearArr = (Object[]) linearArr1.toArray();
+
 
         /********************************************************************************* The expected output *********************************************************/
         /**************************************[0, 0, {product_id=0, name=Ken Tomato Sauce - dozen, price_unit=null, weight=null, product_uom_qty=2.00}]************/
 
         /*********************************************[Ljava.util.Vector;@2ff5659e**************************/
 				    /*/|\because it is an array of objects*/
-        System.out.println(linearArr);
+        Log.e("The ArrayList : ",linearArr.toString());
+        System.out.println("The ArrayList" + linearArr1.toString());
 
         getOrders getorder = new getOrders();
         Order order = getorder.getOrder(dbconnector, phone);
 
         String date_time = order.getDate_time_();
         String expected_delivery_date = order.getExpected_delivery_date_();
+        final Calendar c = Calendar.getInstance();
+        int_year = c.get(Calendar.YEAR);
+        int_month = c.get(Calendar.MONTH);
+        int_date = c.get(Calendar.DAY_OF_MONTH);
+        date_time = new StringBuffer().append(int_year).append("-").append(int_month+1).append("-").append(int_date).toString();
 
         try{
             HashMap<String, Object> vals = new HashMap<String, Object>();
 
 
+            Log.e("Expected delivery : ", expected_delivery_date + " Current Date : " + date_time);
 
 
-
+            Log.e("The order details: ", "The cust id: " + custId + " Vendor partner id: " + agentIds + " date_time: " + date_time + " copia_date_order: " + expected_delivery_date
+                    + " order_line " + linearArr + " Mode " + mode + " is layaway" + layaway + " Shop id " + _shop_id + " user id: " + _user_id);
             vals.put("pricelist_id", 1);
             vals.put("partner_id", custId);
             vals.put("partner_shipping_id",custId);
             vals.put("partner_invoice_id",custId);
             vals.put("vendor_partner_id",agentIds);
             vals.put("date_order",date_time);
-            vals.put("copia_date_order",expected_delivery_date);
-            vals.put("date_delivery",expected_delivery_date);
+            vals.put("copia_date_order",date_time);
+            //vals.put("copia_date_order",expected_delivery_date);
+            vals.put("date_delivery",date_time);
+            //vals.put("date_delivery",expected_delivery_date);
             vals.put("order_line",linearArr);
             vals.put("mode",mode);
             vals.put("islayaway",layaway);
             vals.put("carrier_id",0);
-            vals.put("shop_id",_shop_id);
-            vals.put("user_id",_user_id);
+            vals.put("shop_id",1);
+            vals.put("user_id", _user_id);
 
 
 
@@ -313,14 +355,15 @@ public class Functions {
             args.add(db);
             args.add(1);
             args.add(password);
-            args.add("sale.Order");
+            args.add("sale.order");
             args.add("create");
             args.add(vals);
             System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>check out the args<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
             System.out.println(args);
             int result = 0;
+            Log.e("The args are : "," Them args is >>>>>>>>>>>>>>>>"+ args);
             result = (int)client.execute("execute", args);
-            System.out.println(" Them result is >>>>>>>>>>>>>>>>"+ result);
+            Log.e("Result : "," Them result is >>>>>>>>>>>>>>>>"+ result);
             dbconnector.updateOrderTable(order.getOrder_id(),
                     order.getCust_phone_(),
                     order.getDate_time_(),

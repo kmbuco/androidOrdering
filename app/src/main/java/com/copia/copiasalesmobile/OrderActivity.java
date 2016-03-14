@@ -962,11 +962,13 @@ public class OrderActivity extends AbstractBaseActivity {
                     Order order = getorder.getOrder(dbConnector, sCPhone);
                     String date_time = order.getDate_time_();
                     //store the order to be sent later
+                    Log.e("The Order: ", "OrderId "+ sOrderID + "Phone"+ sCPhone +" date_time "+ order.getDate_time_() + " sDeliveryDate "+ sDeliveryDate);
                     dbConnector.updateOrderTable(sOrderID,
                             sCPhone,
                             date_time,
                             sDeliveryDate
                             ,"1");
+                    PDialog.dismiss();
                 }
 
                 return null;

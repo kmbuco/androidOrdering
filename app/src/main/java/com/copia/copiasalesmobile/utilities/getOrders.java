@@ -12,11 +12,20 @@ public class getOrders {
 
 
 
-    public Order getOrder(DatabaseConnectorSqlite dbconnector,String phone) {
+    public Order  getOrder(DatabaseConnectorSqlite dbconnector,String phone) {
+
+        //orders phone are stored as 0722677889 but sent to erp as +254711677889
+        if(phone.contains("+254")){
+            phone = phone.replace("+254","0");
+        }
+
         Log.e("the phone is:", phone);
+        dbconnector.open();
         Cursor result = dbconnector.getOrder(phone);
+
         Order order = new Order();
         if (result.moveToFirst()) {
+
 
             do {
                 order.setDate_time_(result.getString(result
@@ -30,8 +39,10 @@ public class getOrders {
                 order.setOrder_status_(result.getString(result
                         .getColumnIndex("order_status_")));
 
+                Log.e("The order date: ",order.getDate_time_());
             }while(result.moveToNext());
         }
+        dbconnector.close();
         return order;
     }
 }

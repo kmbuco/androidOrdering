@@ -435,7 +435,28 @@ public class DatabaseConnectorSqlite {
 
 
     public Cursor getOrder(String sCPhone) {
-        return database.query("order_table", new String[]{"_id", "cust_phone_", "date_time_", "type_","expected_delivery_date_","order_status_"}, "cust_phone_" + " = '" + sCPhone + "'", null, null, null, null);
+
+        String DATABASE_TABLE = "order_table";
+
+        //select if wholesale only
+        //String type = getAgentLoginDetails().get(0).getUser_type();
+        // select query
+        String sql = "";
+
+
+        sql += "SELECT _id, cust_phone_, date_time_, type_, expected_delivery_date_, order_status_ FROM " + DATABASE_TABLE;
+        sql += " WHERE ( cust_phone_ = "+ sCPhone + ")";
+
+
+        Log.e("the getOrder sql : ", sql);
+
+        open();
+
+        // execute the query
+        Cursor cursor = database.rawQuery(sql, null);
+
+        //return database.query("order_table", new String[]{"_id", "cust_phone_", "date_time_", "type_","expected_delivery_date_","order_status_"}, "cust_phone_" + " = '" + sCPhone + "'", null, null, null, null);
+        return cursor;
     }
 
     //Order operations
@@ -526,9 +547,31 @@ public class DatabaseConnectorSqlite {
         return database.query("order_table", new String[]{"_id", "cust_phone_", "date_time_", "type_","expected_delivery_date_","order_status_"}, "order_status_" + " = 0",
                 null, null, null, "_id");
     }
-    public Cursor getSentOrders() {
-        return database.query("order_table", new String[]{"_id", "cust_phone_", "date_time_", "type_","expected_delivery_date_","order_status_"}, "order_status_" + " = 1",
+    public Cursor getOrders(String orderStatus) {
+        /*return database.query("order_table", new String[]{"_id", "cust_phone_", "date_time_", "type_","expected_delivery_date_","order_status_"}, "order_status_" + " = 1",
                 null, null, null, "_id");
+*/
+        String DATABASE_TABLE = "order_table";
+        String FIELD_NAME = "order_status_";
+
+        //select if wholesale only
+        //String type = getAgentLoginDetails().get(0).getUser_type();
+        // select query
+        String sql = "";
+
+
+        sql += "SELECT _id, cust_phone_, date_time_, type_, expected_delivery_date_, order_status_ FROM " + DATABASE_TABLE;
+        sql += " WHERE (" + FIELD_NAME + " LIKE '%" + orderStatus + "%')";
+        sql += " ORDER BY " + FIELD_NAME + " DESC";
+
+
+        Log.e("the Order sql : ", sql);
+
+        open();
+
+        // execute the query
+        Cursor cursor = database.rawQuery(sql, null);
+        return cursor;
     }
     public Cursor getSyncOrders() {
         return database.query("order_table", new String[]{"_id", "cust_phone_", "date_time_", "type_","expected_delivery_date_","order_status_"}, "order_status_" + " = 2",
