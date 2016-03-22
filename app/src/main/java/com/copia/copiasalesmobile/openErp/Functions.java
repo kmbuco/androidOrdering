@@ -35,6 +35,7 @@ public class Functions {
     String phone;
     public Integer int_year, int_month, int_date, int_hour, int_min, int_sec;
     XmlRpcClient client;
+    XmlRpcClient client1;
     String mode = "ecatalog";
     Boolean layaway = false;
 
@@ -42,15 +43,79 @@ public class Functions {
     public Functions(DatabaseConnectorSqlite dbconnector){
         this.dbconnector = dbconnector;
         client = new XmlRpcClient();
+        client1 = new XmlRpcClient();
         XmlRpcClientConfigImpl clientConfig = new XmlRpcClientConfigImpl();
+        XmlRpcClientConfigImpl clientConfig1 = new XmlRpcClientConfigImpl();
         clientConfig.setEnabledForExtensions(true);
+        clientConfig1.setEnabledForExtensions(true);
         try {
             clientConfig.setServerURL(new URL("http", "52.89.125.104", 8069, "/xmlrpc/object"));
+            clientConfig1.setServerURL(new URL("http", "52.89.125.104", 8069, "/xmlrpc/common"));
         } catch (MalformedURLException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
         client.setConfig(clientConfig);
+        client1.setConfig(clientConfig1);
+    }
+
+    public int Login(String username, String password){
+        int login = 0;
+        Object[] ObjectParam = { "login", "=", username};
+        Object[] ObjectParam1 = { "password_crypt", "=", password };
+
+
+        ArrayList<Object[]> listparam = new ArrayList<Object[]>();
+        listparam.add(ObjectParam);
+        //listparam.add(ObjectParam1);
+        String tableName= "res.users";
+        ArrayList ids = searchIDs(listparam,tableName);
+
+        //int 1->successful login int 0->incorrect username 2->incorrect password
+        if(ids.size() > 0){
+            login = 1;
+        }else if(ids.size() <= 0){
+            login = 0;
+            return login;
+        }
+
+        //object reading params
+        //Object[] params = { "name","list_price","id","taxes_id","weight","property_product_pricelist"};
+        //list ids is arraylist of IDs
+        //eg.listIds = new ArrayList<>();
+        //public Object [] read(Object[] params,ArrayList listIds, String tableName){
+
+
+        /*String experiment_id;
+        String active;
+        String partner_id;
+        String password_crypt = "";
+
+        Object[] params = {"experiment_id","active","partner_id","password"};
+        ArrayList listId = new ArrayList();
+        listId.add(ids.get(0));
+        listparam.add(ObjectParam1);
+        tableName= "res.users";
+        Object[] objRead = read(params,listId,tableName);
+        ArrayList idpass = searchIDs(listparam, tableName);
+        if(idpass.size()<0){
+            login = 1;
+        }else if(idpass.size()<=0){
+            login = 2;
+        }*/
+
+
+        /*for (Object object : objRead) {
+            HashMap hash = (HashMap)object;
+            hash.get("experiment_id");
+            hash.get("active");
+            hash.get("partner_id");
+            password_crypt = (String) hash.get("password");
+        }
+        Log.e("The password","password: "+password_crypt );*/
+
+        Log.e("Login: ", Integer.toString(login) );
+        return login;
     }
 
     //takes list of parameters in the for of list of objetcs eg
@@ -71,14 +136,16 @@ public class Functions {
 
             Log.e("The search Arguments: ", arg2.toString());
 
-            Object[] ids = (Object[]) client.execute("execute", arg2);
+                Object[] ids = (Object[]) client.execute("execute", arg2);
+                for (Object obj : ids) {
+                    int a = Integer.parseInt(obj.toString());
+                    listIds.add(a);
+                    Log.e("The search Ids: ",Integer.toString(a));
+            }
+
 
             //if you want to you can print out the results here
-            for (Object obj : ids) {
-                int a = Integer.parseInt(obj.toString());
-                listIds.add(a);
-                //System.out.println(a);
-            }
+
         }catch (Exception ex){
             ex.printStackTrace();
         }
@@ -102,7 +169,10 @@ public class Functions {
             arg.add(params);
 
             Log.e("Arguments for read : ", arg.toString());
-            hm = (Object[]) client.execute("execute", arg);
+
+                hm = (Object[]) client.execute("execute", arg);
+
+
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -125,10 +195,11 @@ public class Functions {
     }
 
     //place an
-    public void createOrder(String productIds, String agentIds, String phone, String quantities,String date_delivery){
+    public int createOrder(String productIds, String agentIds, String phone, String quantities,String date_delivery){
         Object  [] prodDetails;
         Object  [] custDetails;
         Object  [] agentDetails;
+        int order_id = 0;
         this.phone = phone;
         int _shop_id = 0;
         int _user_id = 0;
@@ -262,7 +333,7 @@ public class Functions {
             Object[] prod_objTax = (Object[]) hash.get("taxes_id"); //an object array
             Double prod_weight = (Double) hash.get("weight");
             int prod_id  = (int) hash.get("id");
-            int prod_tax_id = (int) prod_objTax[0];
+//            int prod_tax_id = (int) prod_objTax[0];
 
             //do the iteration for the products here
             //vals.put("ref", "MGA");
@@ -345,7 +416,7 @@ public class Functions {
             vals.put("mode",mode);
             vals.put("islayaway",layaway);
             vals.put("carrier_id",0);
-            vals.put("shop_id",1);
+            vals.put("shop_id", 1);
             vals.put("user_id", _user_id);
 
 
@@ -362,8 +433,8 @@ public class Functions {
             System.out.println(args);
             int result = 0;
             Log.e("The args are : "," Them args is >>>>>>>>>>>>>>>>"+ args);
-            result = (int)client.execute("execute", args);
-            Log.e("Result : "," Them result is >>>>>>>>>>>>>>>>"+ result);
+            order_id = (int)client.execute("execute", args);
+            Log.e("Result : "," Them result is >>>>>>>>>>>>>>>>"+ order_id);
             dbconnector.updateOrderTable(order.getOrder_id(),
                     order.getCust_phone_(),
                     order.getDate_time_(),
@@ -373,8 +444,7 @@ public class Functions {
             ex.printStackTrace();
         }
 
-
-
+        return order_id;
     }
 
 }

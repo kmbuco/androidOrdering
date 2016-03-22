@@ -11,7 +11,9 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.opengl.Visibility;
 import android.os.AsyncTask;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
@@ -69,6 +71,7 @@ public class OrderActivity extends AbstractBaseActivity {
 
     ListView mDrawerList;
     RelativeLayout mDrawerPane;
+    String sOrderStatus;
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout mDrawerLayout;
     private Toolbar toolbar;
@@ -103,6 +106,7 @@ public class OrderActivity extends AbstractBaseActivity {
     public Double dSelected, dPrice, dTotal;
     Button btnSend;
     String agentId;
+    int order_id;
 
     AlertDialogManager alert_ = new AlertDialogManager();
     ArrayList<NavItem> mNavItems = new ArrayList<NavItem>();
@@ -141,6 +145,7 @@ public class OrderActivity extends AbstractBaseActivity {
             sOrderID = extras.getString("order_id");
             sDeliveryDate = extras.getString("cdeliverydate");
             sType = extras.getString("ctype");
+            sOrderStatus = extras.getString ("orderStatus");
             setTitle("Order List for " + sCPhone);
 
             Log.e("Order Type:", sType);
@@ -148,7 +153,6 @@ public class OrderActivity extends AbstractBaseActivity {
             sOrderID = "";
             sCPhone = "";
         }
-
 
         dbconnector = new DatabaseConnectorSqlite(OrderActivity.this);
 
@@ -356,6 +360,31 @@ public class OrderActivity extends AbstractBaseActivity {
                 }
             }
         });
+
+        if(sOrderStatus.equals("1")){ //order has already been made disable the controls.
+            btnSend.setVisibility(View.GONE);
+            btnAdd.setVisibility(View.GONE);
+            TextInputLayout txtAgentName = (TextInputLayout) findViewById(R.id.wrapper_name);
+            TextInputLayout txtProdName = (TextInputLayout) findViewById(R.id.wrapper_prod_search);
+            ImageButton searchProd = (ImageButton) findViewById(R.id.btnClear);
+            ImageButton searchName = (ImageButton) findViewById(R.id.btnSearchName);
+            txtAgentName.setVisibility(View.GONE);
+            txtProdName.setVisibility(View.GONE);
+            searchProd.setVisibility(View.GONE);
+            searchName.setVisibility(View.GONE);
+        }if(sOrderStatus.equals("0")) { //order has already been made disable the controls.
+            btnSend.setVisibility(View.VISIBLE);
+            btnAdd.setVisibility(View.VISIBLE);
+            TextInputLayout txtAgentName = (TextInputLayout) findViewById(R.id.wrapper_name);
+            TextInputLayout txtProdName = (TextInputLayout) findViewById(R.id.wrapper_prod_search);
+            ImageButton searchProd = (ImageButton) findViewById(R.id.btnClear);
+            ImageButton searchName = (ImageButton) findViewById(R.id.btnSearchName);
+            txtAgentName.setVisibility(View.VISIBLE);
+            txtProdName.setVisibility(View.VISIBLE);
+            searchProd.setVisibility(View.VISIBLE);
+            searchName.setVisibility(View.VISIBLE);
+        }
+
 
         mNavItems.add(new NavItem("Sync Products", "Get new products, update prices and offers", R.drawable.new_prod));
         mNavItems.add(new NavItem("Sync Your Agent", "Get new agent.", R.drawable.person_sync));
@@ -873,7 +902,7 @@ public class OrderActivity extends AbstractBaseActivity {
         /**
          * Background Async Task to Send Order
          */
-        class SendOrder extends AsyncTask<String, String, String> {
+        class SendOrder extends AsyncTask<String, String, Integer> {
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
@@ -890,7 +919,7 @@ public class OrderActivity extends AbstractBaseActivity {
             }
 
             @Override
-            protected String doInBackground(String... args) {
+            protected Integer doInBackground(String... args) {
                 // Opening database
                 DatabaseConnectorSqlite dbConnector = new DatabaseConnectorSqlite(OrderActivity.this);
                 dbConnector.open();
@@ -956,7 +985,7 @@ public class OrderActivity extends AbstractBaseActivity {
 
                 Log.e("The product IDs: ", product_codes);
                 if(utilityConn.isOnline()){
-                    func.createOrder(product_codes, sAgentId ,sCPhone,product_quantity,sDeliveryDate);
+                    order_id = func.createOrder(product_codes, sAgentId ,sCPhone,product_quantity,sDeliveryDate);
                 }else{
                     getOrders getorder = new getOrders();
                     Order order = getorder.getOrder(dbConnector, sCPhone);
@@ -970,9 +999,16 @@ public class OrderActivity extends AbstractBaseActivity {
                             ,"1");
                     PDialog.dismiss();
                 }
+                Log.e("The order ID", Integer.toString(order_id));
 
-                return null;
+                return order_id;
             }
+
+            protected void onPostExecute(Integer order_id) {
+                Log.e("The order ID", order_id.toString());
+                PDialog.dismiss();
+            }
+
         }
 
 

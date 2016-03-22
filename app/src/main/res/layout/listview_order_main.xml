@@ -11,19 +11,19 @@
         android:id="@android:id/list"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:divider="#b5b5b5"
-        android:layout_weight="3"
-        android:dividerHeight="2sp"/>
+        android:layout_weight="3"/>
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="bottom|right|end"
         android:layout_margin="@dimen/fab_margin"
         app:elevation="6dp"
-        android:src="@drawable/cart_add"
+        android:src="@mipmap/ic_add_shopping_cart_black"
         app:pressedTranslationZ="12dp"
-        app:backgroundTint="@color/colorAccentred"
+        app:backgroundTint="@color/colorAccentyellow"
+        android:scaleType="center"
         app:rippleColor="#FFF"
         android:layout_marginBottom="-64dp"
          />

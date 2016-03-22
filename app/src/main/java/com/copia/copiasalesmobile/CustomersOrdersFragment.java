@@ -70,7 +70,7 @@ public class CustomersOrdersFragment extends ListFragment {
         tvDateTime = (TextView) getActivity().findViewById(R.id.pending_list_date_time);
 
         //map id, phone, datetime to a TextView
-        conAdapter = new SimpleCursorAdapter(getActivity(), R.layout.list_item_customers_orders, null,
+        conAdapter = new SimpleCursorAdapter(getActivity(), R.layout.order_item_card, null,
                 new String[]{TAG_ORDER_ID, TAG_CUST_PHONE, TAG_DATE_TIME, TAG_TYPE},
                 new int[]{R.id.pending_list_order_id, R.id.pending_list_cust_phone, R.id.pending_list_date_time,
                         R.id.pending_list_type});
@@ -129,7 +129,7 @@ public class CustomersOrdersFragment extends ListFragment {
             dbConnector.open();
             try {
                 //return dbConnector.getAllOrders();
-                return dbConnector.getOrders("1");
+                return dbConnector.getOrders("0");
             } catch (Exception e) {
                 return null;
             }
@@ -212,6 +212,7 @@ public class CustomersOrdersFragment extends ListFragment {
         viewCon.putExtra("order_id", sOrderID);
         viewCon.putExtra("cphone", sCustPhone);
         viewCon.putExtra("ctype", sCustType);
+        viewCon.putExtra("orderStatus", "0");
         startActivity(viewCon);
     }
 

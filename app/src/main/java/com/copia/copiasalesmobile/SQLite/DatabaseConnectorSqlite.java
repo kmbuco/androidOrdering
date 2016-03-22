@@ -8,7 +8,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.copia.copiasalesmobile.utilities.AgentSearchObject;
+import com.copia.copiasalesmobile.utilities.OrderProdLines;
 import com.copia.copiasalesmobile.utilities.ProdSearchObject;
+import com.copia.copiasalesmobile.utilities.productLine;
+
+import java.util.ArrayList;
 
 /**
  * Created by mbuco on 2/11/16.
@@ -546,6 +550,72 @@ public class DatabaseConnectorSqlite {
     public Cursor getAllPendingOrders() {
         return database.query("order_table", new String[]{"_id", "cust_phone_", "date_time_", "type_","expected_delivery_date_","order_status_"}, "order_status_" + " = 0",
                 null, null, null, "_id");
+    }
+    public OrderProdLines getAllSyncOrders() {
+        productLine pdtLine = new productLine();
+        OrderProdLines ordProdLine = new OrderProdLines();
+        ArrayList orderArrayList = new ArrayList<>();
+        String sOrderID ;
+        String scust_phone_;
+        String sdate_time_;
+        String stype_;
+        String sexpected_delivery_date_;
+
+        //orderLine
+        String code_;
+        String name_;
+        String price_;
+        String quantity_;
+        String comm_;
+        String total_;
+        String copia_product_id_;
+        //get all sync orders from order table into an arrayList
+        //iterate over the arrayList of orders and add the order lines
+        open();
+        Cursor cursor =  database.query("order_table", new String[]{"_id", "cust_phone_", "date_time_", "type_","expected_delivery_date_","order_status_"}, "order_status_" + " = 0",
+                null, null, null, "_id");
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                sOrderID = cursor.getString(cursor.getColumnIndex("_id"));
+                scust_phone_ = cursor.getString(cursor.getColumnIndex("cust_phone_"));
+                sdate_time_ = cursor.getString(cursor.getColumnIndex("date_time_"));
+                stype_ = cursor.getString(cursor.getColumnIndex("type_"));
+                sexpected_delivery_date_ = cursor.getString(cursor.getColumnIndex("expected_delivery_date_"));
+                ordProdLine.setsOrderID(sOrderID);
+                ordProdLine.setScust_phone_(scust_phone_);
+                ordProdLine.setSdate_time_(sdate_time_);
+                ordProdLine.setStype_(stype_);
+                ordProdLine.setSexpected_delivery_date_(sexpected_delivery_date_);
+                Cursor cursorLine = database.query("order_table_lines", new String[]{"code_", "name_", "price_", "quantity_", "comm_", "total_", "copia_product_id_"}, "order_id_" + " = '" + sOrderID + "'",
+                        null, null, null, "_id");
+                if (cursorLine != null) {
+                    if (cursorLine.moveToFirst()) {
+                        pdtLine = new productLine();
+                        code_ = cursor.getString(cursor.getColumnIndex("code_"));
+                        name_ = cursor.getString(cursor.getColumnIndex("name_"));
+                        price_ = cursor.getString(cursor.getColumnIndex("price_"));
+                        quantity_ = cursor.getString(cursor.getColumnIndex("quantity_"));
+                        comm_ = cursor.getString(cursor.getColumnIndex("comm_"));
+                        total_ = cursor.getString(cursor.getColumnIndex("total_"));
+                        copia_product_id_ = cursor.getString(cursor.getColumnIndex("copia_product_id_"));
+
+                        pdtLine.setCode_(code_);
+                        pdtLine.setName_(name_);
+                        pdtLine.setPrice_(price_);
+                        pdtLine.setQuantity_(quantity_);
+                        pdtLine.setComm_(comm_);
+                        pdtLine.setTotal_(total_);
+                        pdtLine.setCopia_product_id_(copia_product_id_);
+                        orderArrayList.add(pdtLine);
+                    }
+
+                }
+                ordProdLine.setArrProdLines(orderArrayList);
+            }
+        }
+        close();
+        return ordProdLine;
     }
     public Cursor getOrders(String orderStatus) {
         /*return database.query("order_table", new String[]{"_id", "cust_phone_", "date_time_", "type_","expected_delivery_date_","order_status_"}, "order_status_" + " = 1",

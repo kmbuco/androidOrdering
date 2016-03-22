@@ -45,6 +45,27 @@
         </menu>
     </item-->
 
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_sync_orders"
+            android:icon="@drawable/ic_shopping_cart"
+            android:title="Sync Orders" />
+
+    </group>
+
+    <item android:title="Sales Rep Menus">
+        <menu>
+            <item
+                android:id="@+id/nav_sync_prod"
+                android:icon="@drawable/person_nav"
+                android:title="Sync Products" />
+            <item
+                android:id="@+id/nav_sync_agents"
+                android:icon="@drawable/person_sync"
+                android:title="Sync Agents" />
+            </menu>
+    </item>
+
 
 
 
