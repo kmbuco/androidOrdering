@@ -7,6 +7,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.copia.copiasalesmobile.utilities.Agent;
 import com.copia.copiasalesmobile.utilities.AgentSearchObject;
 import com.copia.copiasalesmobile.utilities.OrderProdLines;
 import com.copia.copiasalesmobile.utilities.ProdSearchObject;
@@ -25,7 +26,7 @@ public class DatabaseConnectorSqlite {
     private static final String TAG = DatabaseConnectorSqlite.class.getSimpleName();
 
     public DatabaseConnectorSqlite(Context context) {
-        dbOpenHelper = new DatabaseOpenHelperSqlite(context, DB_NAME, null, 3);
+        dbOpenHelper = new DatabaseOpenHelperSqlite(context, DB_NAME, null, 5);
     }
 
     public void open() throws SQLException {
@@ -374,10 +375,9 @@ public class DatabaseConnectorSqlite {
         return ObjectItemData;
     }
 
-
     /***
      *
-     * Search Products
+     * Search Agent
      *
      ***/
     public AgentSearchObject[] readAgentData(String searchTerm) {
@@ -408,7 +408,7 @@ public class DatabaseConnectorSqlite {
         // execute the query
         Cursor cursor = database.rawQuery(sql, null);
         int recCount = cursor.getCount();
-        Log.e("Test count","The count is: "+  recCount);
+        Log.e("Test count", "The count is: " + recCount);
         AgentSearchObject[] ObjectItemData = new AgentSearchObject[recCount];
         int x = 0;
 
@@ -438,6 +438,92 @@ public class DatabaseConnectorSqlite {
     }
 
 
+    public Agent getAgent(String sagent_id){
+        //lite_agent(_id, agent_name, agent_number, write_date_,experiment_id)
+        String DATABASE_TABLE = "lite_agent";
+
+        //select if wholesale only
+        //String type = getAgentLoginDetails().get(0).getUser_type();
+        // select query
+        String sql = "";
+
+        Agent agent = new Agent();
+
+        sql += "SELECT _id, agent_name, agent_number, write_date_,experiment_id FROM " + DATABASE_TABLE;
+        sql += " WHERE  _id = "+ sagent_id;
+
+
+        Log.e("the getAgents sql : ", sql);
+
+        open();
+
+        // execute the query
+        Cursor cursor = database.rawQuery(sql, null);
+        cursor.getCount();
+        Log.e("the cursor counts: ",Integer.toString(cursor.getCount()));
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    String sAgentId = cursor.getString(cursor.getColumnIndex("_id"));
+                    String sAgent_name = cursor.getString(cursor.getColumnIndex("agent_name"));
+                    String sAgent_number = cursor.getString(cursor.getColumnIndex("agent_number"));
+                    String sWrite_date_ = cursor.getString(cursor.getColumnIndex("write_date_"));
+                    String sExperiment_id =  cursor.getString(cursor.getColumnIndex("experiment_id"));
+
+                    agent.setId(sAgentId);
+                    agent.setName(sAgent_name);
+                    agent.setPhone(sAgent_number);
+                    agent.setExperiment_id(sExperiment_id);
+                    agent.setWrite_date(sWrite_date_);
+                } while (cursor.moveToNext());
+
+            }
+        }
+        close();
+        if(agent ==null){
+            Log.e("The Agent is: ", "NULL...");
+        }
+        return agent;
+
+    }
+
+
+    public Cursor getOrderValues(String order_id) {
+
+        String DATABASE_TABLE = "order_table";
+
+        //select if wholesale only
+        //String type = getAgentLoginDetails().get(0).getUser_type();
+        // select query
+        String sql = "";
+
+
+        sql += "SELECT _id, cust_phone_, date_time_, type_, expected_delivery_date_, agent_id_, order_status_ FROM " + DATABASE_TABLE;
+        sql += " WHERE (_id = "+ order_id + ")";
+
+
+        Log.e("the getOrder sql : ", sql);
+
+        open();
+        // execute the query
+        Cursor cursor = database.rawQuery(sql, null);
+        String arrData = "";
+        if(cursor != null){
+            if (cursor.moveToFirst()) {
+                do {
+                    arrData = cursor.getString(cursor.getColumnIndex("agent_id_"));
+                    Log.e("The agent ID: ",arrData);
+                } while (cursor.moveToNext());
+            }
+        }else{
+            Log.e("The agent ID: ","No orders.");
+        }
+
+        //return database.query("order_table", new String[]{"_id", "cust_phone_", "date_time_", "type_","expected_delivery_date_","order_status_"}, "cust_phone_" + " = '" + sCPhone + "'", null, null, null, null);
+        return cursor;
+    }
+
+
     public Cursor getOrder(String sCPhone) {
 
         String DATABASE_TABLE = "order_table";
@@ -448,16 +534,26 @@ public class DatabaseConnectorSqlite {
         String sql = "";
 
 
-        sql += "SELECT _id, cust_phone_, date_time_, type_, expected_delivery_date_, order_status_ FROM " + DATABASE_TABLE;
-        sql += " WHERE ( cust_phone_ = "+ sCPhone + ")";
+        sql += "SELECT _id, cust_phone_, date_time_, type_, expected_delivery_date_, agent_id_, order_status_ FROM " + DATABASE_TABLE;
+        sql += " WHERE (cust_phone_ = "+ sCPhone + ")";
 
 
         Log.e("the getOrder sql : ", sql);
 
         open();
-
         // execute the query
         Cursor cursor = database.rawQuery(sql, null);
+        String arrData = "";
+        if(cursor != null){
+            if (cursor.moveToFirst()) {
+                do {
+                    arrData = cursor.getString(cursor.getColumnIndex("agent_id_"));
+                    Log.e("The agent ID: ",arrData);
+                } while (cursor.moveToNext());
+            }
+        }else{
+            Log.e("The agent ID: ","No orders.");
+        }
 
         //return database.query("order_table", new String[]{"_id", "cust_phone_", "date_time_", "type_","expected_delivery_date_","order_status_"}, "cust_phone_" + " = '" + sCPhone + "'", null, null, null, null);
         return cursor;
@@ -551,15 +647,20 @@ public class DatabaseConnectorSqlite {
         return database.query("order_table", new String[]{"_id", "cust_phone_", "date_time_", "type_","expected_delivery_date_","order_status_"}, "order_status_" + " = 0",
                 null, null, null, "_id");
     }
-    public OrderProdLines getAllSyncOrders() {
-        productLine pdtLine = new productLine();
-        OrderProdLines ordProdLine = new OrderProdLines();
+    public ArrayList<OrderProdLines> getAllSyncOrders() {
+        productLine pdtLine;
+        OrderProdLines ordProdLine;
+        //arraylist of the lines
         ArrayList orderArrayList = new ArrayList<>();
+        //arraylist of the orders
+        ArrayList<OrderProdLines> orderProdArrayList = new ArrayList<>();
+
         String sOrderID ;
         String scust_phone_;
         String sdate_time_;
         String stype_;
         String sexpected_delivery_date_;
+        String agent_id_;
 
         //orderLine
         String code_;
@@ -572,21 +673,25 @@ public class DatabaseConnectorSqlite {
         //get all sync orders from order table into an arrayList
         //iterate over the arrayList of orders and add the order lines
         open();
-        Cursor cursor =  database.query("order_table", new String[]{"_id", "cust_phone_", "date_time_", "type_","expected_delivery_date_","order_status_"}, "order_status_" + " = 0",
+        Cursor cursor =  database.query("order_table", new String[]{"_id", "cust_phone_", "date_time_", "type_","expected_delivery_date_","order_status_","agent_id_"}, "order_status_" + " = 0",
                 null, null, null, "_id");
 
         if (cursor != null) {
             if (cursor.moveToFirst()) {
+                ordProdLine = new OrderProdLines();
                 sOrderID = cursor.getString(cursor.getColumnIndex("_id"));
                 scust_phone_ = cursor.getString(cursor.getColumnIndex("cust_phone_"));
                 sdate_time_ = cursor.getString(cursor.getColumnIndex("date_time_"));
                 stype_ = cursor.getString(cursor.getColumnIndex("type_"));
                 sexpected_delivery_date_ = cursor.getString(cursor.getColumnIndex("expected_delivery_date_"));
+                agent_id_ = cursor.getString(cursor.getColumnIndex("agent_id_"));
                 ordProdLine.setsOrderID(sOrderID);
                 ordProdLine.setScust_phone_(scust_phone_);
                 ordProdLine.setSdate_time_(sdate_time_);
                 ordProdLine.setStype_(stype_);
                 ordProdLine.setSexpected_delivery_date_(sexpected_delivery_date_);
+                ordProdLine.setAgent_id_(agent_id_);
+
                 Cursor cursorLine = database.query("order_table_lines", new String[]{"code_", "name_", "price_", "quantity_", "comm_", "total_", "copia_product_id_"}, "order_id_" + " = '" + sOrderID + "'",
                         null, null, null, "_id");
                 if (cursorLine != null) {
@@ -612,10 +717,11 @@ public class DatabaseConnectorSqlite {
 
                 }
                 ordProdLine.setArrProdLines(orderArrayList);
+                orderProdArrayList.add(ordProdLine);
             }
         }
         close();
-        return ordProdLine;
+        return orderProdArrayList;
     }
     public Cursor getOrders(String orderStatus) {
         /*return database.query("order_table", new String[]{"_id", "cust_phone_", "date_time_", "type_","expected_delivery_date_","order_status_"}, "order_status_" + " = 1",
@@ -641,6 +747,7 @@ public class DatabaseConnectorSqlite {
 
         // execute the query
         Cursor cursor = database.rawQuery(sql, null);
+
         return cursor;
     }
     public Cursor getSyncOrders() {
@@ -667,18 +774,21 @@ public class DatabaseConnectorSqlite {
         newCon.put("type_", sType);
         newCon.put("expected_delivery_date_", sDeliveryDate);
         newCon.put("order_status_", sStatus);
+        newCon.put("agent_id_", "");
 
         open();
         database.insert("order_table", null, newCon);
         close();
     }
 
-    public void updateOrderTable(String sOrderID, String sPhone, String sDateTime,String sDeliveryDate,String sStatus) {
+    public void updateOrderTable(String sOrderID, String sPhone, String sDateTime,String sDeliveryDate,String sStatus, String sAgentId) {
         ContentValues editCon = new ContentValues();
         editCon.put("cust_phone_", sPhone);
         editCon.put("date_time_", sDateTime);
         editCon.put("expected_delivery_date_",sDeliveryDate);
         editCon.put("order_status_", sStatus);
+        editCon.put("agent_id_", sAgentId);
+        Log.e("update Id: ", sAgentId);
 
         open();
         //database.update("order_table", editCon, "_id" +" = '"+sOrderID+"'", null);

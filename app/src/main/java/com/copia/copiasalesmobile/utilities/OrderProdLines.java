@@ -11,6 +11,7 @@ public class OrderProdLines {
     String sdate_time_;
     String stype_;
     String sexpected_delivery_date_;
+    String agent_id_;
     ArrayList<productLine> arrProdLines;
 
     public String getsOrderID() {
@@ -59,6 +60,14 @@ public class OrderProdLines {
 
     public void setArrProdLines(ArrayList<productLine> arrProdLines) {
         this.arrProdLines = arrProdLines;
+    }
+
+    public String getAgent_id_() {
+        return agent_id_;
+    }
+
+    public void setAgent_id_(String agent_id_) {
+        this.agent_id_ = agent_id_;
     }
 
 }

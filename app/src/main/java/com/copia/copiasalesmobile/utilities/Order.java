@@ -11,6 +11,15 @@ public class Order {
     String cust_phone_;
     String order_status_;
     String order_id;
+    String agent_id_;
+
+    public String getAgent_id_() {
+        return agent_id_;
+    }
+
+    public void setAgent_id_(String agent_id_) {
+        this.agent_id_ = agent_id_;
+    }
 
     public String getOrder_id() {
         return order_id;

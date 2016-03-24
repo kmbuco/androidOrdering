@@ -201,7 +201,7 @@ public class AddCustomerActivity extends AppCompatActivity {
                                         edPhone.getText().toString().trim(),
                                         tvDateTime.getText().toString().trim(),
                                         sDeliveryDate
-                                        ,"0");
+                                        ,"0","");
                             }
                             //finish();
                         }

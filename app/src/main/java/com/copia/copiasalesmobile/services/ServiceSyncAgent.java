@@ -81,6 +81,7 @@ public class ServiceSyncAgent extends Service {
                     Log.e("Get them date: ",ag.getWrite_date());
                 }
                 dbConn.insertAgentTable(ag.getId(),ag.getName(),ag.getWrite_date(), ag.getPhone(),ag.getExperiment_id());
+                Log.e("Agent id: ", ag.getId());
             }
             return null;
         }

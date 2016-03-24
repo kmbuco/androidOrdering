@@ -219,11 +219,12 @@ public class ErpFunctions {
 
             op.create(vals,"sale.order");
 
+            //change this
             dbconnector.updateOrderTable(order.getOrder_id(),
                     order.getCust_phone_(),
                     order.getDate_time_(),
                     order.getExpected_delivery_date_()
-                    , "1");
+                    , "1","");
         }catch(Exception ex){
             ex.printStackTrace();
         }

@@ -48,6 +48,7 @@ import com.copia.copiasalesmobile.odooConn.Login;
 import com.copia.copiasalesmobile.openErp.Functions;
 import com.copia.copiasalesmobile.services.ServiceSyncAgent;
 import com.copia.copiasalesmobile.services.ServiceSyncProd;
+import com.copia.copiasalesmobile.utilities.Agent;
 import com.copia.copiasalesmobile.utilities.AgentSearchObject;
 import com.copia.copiasalesmobile.utilities.AlertDialogManager;
 import com.copia.copiasalesmobile.utilities.CheckConnection;
@@ -81,7 +82,7 @@ public class OrderActivity extends AbstractBaseActivity {
     int commPercent;
     String sCode = "", sName = "", sComm = "", sPrice = "", sDesc = "", sImage = "", sCopiaID = "", slabel = "", sTotal = "";
     public String sOrderID = "", sCPhone = "", sNewOrderID = "", sNewCustomer = "", sEnterCode = "",
-            sCheckCode = "", sCheckCopiaID = "", sCountValue = "", sCountUpdate = "", sType = "", sDeliveryDate = "";
+            sCheckCode = "", sCheckCopiaID = "", sCountValue = "", sCountUpdate = "", sType = "", sDeliveryDate = "", sAgent_id = "";
     public ImageView imageView;
     public EditText edQuantity;
     String strSQuantity;
@@ -108,10 +109,15 @@ public class OrderActivity extends AbstractBaseActivity {
     String agentId;
     int order_id;
 
+    TextView tvName;
+    TextView tvPhone;
+    TextView tvAgentId;
+
     AlertDialogManager alert_ = new AlertDialogManager();
     ArrayList<NavItem> mNavItems = new ArrayList<NavItem>();
     String hrs = "hrs";
     String[] items = {"Edit Item", "Delete Item", "Item Details"};
+    Order order;
 
     // adapter for auto-complete
     public CustomAutoCompleteArrayAdapterAdd myAdapter;
@@ -123,6 +129,10 @@ public class OrderActivity extends AbstractBaseActivity {
 
         setToolBarIcon(R.drawable.ic_shopping_cart);
         setToolBarTitle(getResources().getString(R.string.app_name));
+
+        tvName = (TextView)findViewById(R.id.txt_agent_name);
+        tvPhone = (TextView)findViewById(R.id.txt_agent_phone);
+        tvAgentId = (TextView)findViewById(R.id.txt_agent_id);
 
         Log.e("test:", "Test login");
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -136,6 +146,9 @@ public class OrderActivity extends AbstractBaseActivity {
         ProdSearchObject[] ObjectProdItemData = new ProdSearchObject[0];
         AgentSearchObject[] ObjectAgentItemData = new AgentSearchObject[0];
 
+
+
+
         Bundle extras = getIntent().getExtras();
 
         if (getIntent().getExtras() != null) {
@@ -146,15 +159,23 @@ public class OrderActivity extends AbstractBaseActivity {
             sDeliveryDate = extras.getString("cdeliverydate");
             sType = extras.getString("ctype");
             sOrderStatus = extras.getString ("orderStatus");
+            sAgentId = extras.getString ("cagent_id");
             setTitle("Order List for " + sCPhone);
 
+
+            dbconnector = new DatabaseConnectorSqlite(OrderActivity.this);
+            //get the order
+            getOrders getorder = new getOrders();
+            order = getorder.getOrder(dbconnector, sOrderID);
+
+            sAgentId = order.getAgent_id_();
+            Log.e("Agent Id for List ", sAgentId);
             Log.e("Order Type:", sType);
         } else {
             sOrderID = "";
             sCPhone = "";
         }
 
-        dbconnector = new DatabaseConnectorSqlite(OrderActivity.this);
 
         myAutoProdComplete.addTextChangedListener(new CustomAutoCompleteTextChangedListenerAdd(this));
         myAdapter = new CustomAutoCompleteArrayAdapterAdd(this, R.layout.list_item_search_product, ObjectProdItemData);
@@ -174,6 +195,8 @@ public class OrderActivity extends AbstractBaseActivity {
         tableLayout = (TableLayout) findViewById(R.id.tableLayoutItems);
         cbLayaway = (CheckBox) findViewById(R.id.cb_layaway);
 
+
+        getAgent(sAgentId);
         getDateTime();
         buildTable();
         try {
@@ -264,6 +287,8 @@ public class OrderActivity extends AbstractBaseActivity {
                 sAgentName = ((TextView) arg1.findViewById(R.id.txt_agent_name)).getText().toString();
                 sAgentPhone = ((TextView) arg1.findViewById(R.id.txt_agent_phone)).getText().toString();
 
+                dbconnector.updateOrderTable(sOrderID,sCPhone,sDeliveryDate,sDeliveryDate,sOrderStatus,sAgentId);
+
                 myAutoAgentComplete.setText(sAgentName);
 
             }
@@ -337,26 +362,34 @@ public class OrderActivity extends AbstractBaseActivity {
         btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Send SMS
-                if (tableLayout.getChildCount() != 0) {
-                    if (sCPhone.length() != 0) {
+                //Send via iinternet
+                if(myAutoAgentComplete.getText().equals("")){
+                    alert_.showAlertDialog(OrderActivity.this,
+                            "Submission Failed...",
+                            "Agent not added"
+                                    + "\n" + "Please add Agent to complete Order :-)", false);
+                }else {
+                    if (tableLayout.getChildCount() != 0) {
 
-                        btnSend.setEnabled(false);
-                        btnSend.setVisibility(View.INVISIBLE);
-                        tvGrandTotal.setText("");
-                        tvGrandTotalComm.setText("");
-                        new SendOrder().execute();
+                        if (sCPhone.length() != 0) {
+
+                            btnSend.setEnabled(false);
+                            btnSend.setVisibility(View.INVISIBLE);
+                            tvGrandTotal.setText("");
+                            tvGrandTotalComm.setText("");
+                            new SendOrder().execute();
+                        } else {
+                            alert_.showAlertDialog(OrderActivity.this,
+                                    "Submission Failed...",
+                                    "Customer not added"
+                                            + "\n" + "Please add customer phone number to complete Order :-)", false);
+                        }
                     } else {
                         alert_.showAlertDialog(OrderActivity.this,
                                 "Submission Failed...",
-                                "Customer not added"
-                                        + "\n" + "Please add customer phone number to complete Order :-)", false);
+                                "There are no items available to send an Order"
+                                        + "\n" + "Please add items to complete Order :-)", false);
                     }
-                } else {
-                    alert_.showAlertDialog(OrderActivity.this,
-                            "Submission Failed...",
-                            "There are no items available to send an Order"
-                                    + "\n" + "Please add items to complete Order :-)", false);
                 }
             }
         });
@@ -408,6 +441,7 @@ public class OrderActivity extends AbstractBaseActivity {
 
 
     }
+
 
     @Override
     protected int getLayoutResource() {
@@ -503,6 +537,29 @@ public class OrderActivity extends AbstractBaseActivity {
         tvDateTime.setText(new StringBuilder()
                 .append(int_year).append("-").append(int_month + 1).append("-").append(int_date)
                 .append("  ").append(int_hour).append(":").append(int_min).append(" ").append(hrs));
+    }
+
+    private void getAgent(String sAgentId) {
+        //str != null && !str.isEmpty()
+        if(sAgentId == null){
+            alert_.showAlertDialog(OrderActivity.this,
+                    "Alert!",
+                    "Choose the Agent. " +
+                            "Thank you :-)", false);
+        }else if(sAgentId.isEmpty()){
+
+        }else{
+            Log.e("", sAgentId);
+            Agent agent = new Agent();
+            agent = dbconnector.getAgent(sAgentId);
+            tvName.setText(agent.getName());
+            tvPhone.setText(agent.getPhone());
+            tvAgentId.setText(agent.getId());
+            String agentName = agent.getName();
+
+            myAutoAgentComplete.setText(agentName);
+        }
+
     }
 
 
@@ -984,11 +1041,13 @@ public class OrderActivity extends AbstractBaseActivity {
                 //createOrder(String productIds, int agentIds, String phone, String quantities)
 
                 Log.e("The product IDs: ", product_codes);
+                //check if the agent is empty
+
                 if(utilityConn.isOnline()){
+
                     order_id = func.createOrder(product_codes, sAgentId ,sCPhone,product_quantity,sDeliveryDate);
                 }else{
-                    getOrders getorder = new getOrders();
-                    Order order = getorder.getOrder(dbConnector, sCPhone);
+
                     String date_time = order.getDate_time_();
                     //store the order to be sent later
                     Log.e("The Order: ", "OrderId "+ sOrderID + "Phone"+ sCPhone +" date_time "+ order.getDate_time_() + " sDeliveryDate "+ sDeliveryDate);
@@ -996,7 +1055,7 @@ public class OrderActivity extends AbstractBaseActivity {
                             sCPhone,
                             date_time,
                             sDeliveryDate
-                            ,"1");
+                            ,"1",order.getAgent_id_());
                     PDialog.dismiss();
                 }
                 Log.e("The order ID", Integer.toString(order_id));
@@ -1004,6 +1063,7 @@ public class OrderActivity extends AbstractBaseActivity {
                 return order_id;
             }
 
+            @Override
             protected void onPostExecute(Integer order_id) {
                 Log.e("The order ID", order_id.toString());
                 PDialog.dismiss();

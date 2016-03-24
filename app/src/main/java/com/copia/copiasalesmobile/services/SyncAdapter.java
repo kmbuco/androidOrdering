@@ -66,8 +66,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                             String name = cursor.getString(cursor.getColumnIndex("name_"));
                             String quantity = cursor.getString(cursor.getColumnIndex("quantity_"));
                             String copia_product_id = cursor.getString(cursor.getColumnIndex("copia_product_id_"));
-                            prodLine.setQuantity(quantity);
-                            prodLine.setCode(copia_product_id);
+                            prodLine.setQuantity_(quantity);
+                            prodLine.setCode_(copia_product_id);
                             Log.e("Order ID is: ", code);
                             prodLines.add(prodLine);
                         }

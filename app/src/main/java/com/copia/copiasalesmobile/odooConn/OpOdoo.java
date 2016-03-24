@@ -90,6 +90,7 @@ public class OpOdoo{
             }
             agents.add(agent);
             Log.e("Them name",hash.get("name").toString());
+            Log.e("Them ID: ",hash.get("id").toString());
         }
         return agents;
     }

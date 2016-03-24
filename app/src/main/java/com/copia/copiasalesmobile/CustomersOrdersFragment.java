@@ -27,6 +27,9 @@ import com.copia.copiasalesmobile.R;
 import com.copia.copiasalesmobile.SQLite.DatabaseConnectorSqlite;
 import com.copia.copiasalesmobile.dummy.DummyContent;
 import com.copia.copiasalesmobile.dummy.DummyContent.DummyItem;
+import com.copia.copiasalesmobile.utilities.MyApp;
+import com.copia.copiasalesmobile.utilities.Order;
+import com.copia.copiasalesmobile.utilities.getOrders;
 
 import java.util.List;
 
@@ -206,12 +209,18 @@ public class CustomersOrdersFragment extends ListFragment {
     private void detailsOrder(String sOrderID, View view) {
         String sCustPhone = ((TextView) view.findViewById(R.id.pending_list_cust_phone)).getText().toString();
         String sCustType = ((TextView) view.findViewById(R.id.pending_list_type)).getText().toString();
+        MyApp myapp = new MyApp();
+        DatabaseConnectorSqlite dbConnector = new DatabaseConnectorSqlite(getActivity());
 
+        getOrders getorders = new getOrders();
+        Order order = new Order();
+        order = getorders.getOrder(dbConnector,sCustPhone);
         //Intent viewCon = new Intent(getActivity(), CustomerOrderListActivity.class);
         Intent viewCon = new Intent(getActivity(), OrderActivity.class);
         viewCon.putExtra("order_id", sOrderID);
         viewCon.putExtra("cphone", sCustPhone);
         viewCon.putExtra("ctype", sCustType);
+        viewCon.putExtra("cagent_id", order.getAgent_id_());
         viewCon.putExtra("orderStatus", "0");
         startActivity(viewCon);
     }

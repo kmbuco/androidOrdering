@@ -7,6 +7,11 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.copia.copiasalesmobile.SQLite.DatabaseConnectorSqlite;
+import com.copia.copiasalesmobile.openErp.Functions;
+import com.copia.copiasalesmobile.utilities.OrderProdLines;
+import com.copia.copiasalesmobile.utilities.productLine;
+
+import java.util.ArrayList;
 
 /**
  * Created by mbuco on 3/22/16.
@@ -22,5 +27,41 @@ public class ServiceSyncOrders extends Service {
     @Override
     public void onCreate() {
         Log.e("~~~~~~~~``oo``~~~~~~~~", "Service Created");
+    }
+
+    @Override
+    public void onStart(Intent intent, int startId) {
+        ArrayList<OrderProdLines> ordProdLine = new ArrayList<>();
+        dbConn = new DatabaseConnectorSqlite(getApplicationContext());
+        ordProdLine = dbConn.getAllSyncOrders();
+        String productIds;
+        String agentIds;
+        String phone;
+        String quantities;
+        String date_delivery;
+        String quantity = "";
+        String prodId = "'";
+
+        for(OrderProdLines ord: ordProdLine){
+            //String productIds, String agentIds, String phone, String quantities,String date_delivery
+
+
+            phone = ord.getScust_phone_();
+            date_delivery = ord.getSexpected_delivery_date_();
+            agentIds = ord.getAgent_id_();
+            int x = 0;
+            for(productLine prdLine:ord.getArrProdLines()){
+                if(x==0){
+                    prodId = prdLine.getCopia_product_id_();
+                    quantity = prdLine.getQuantity_();
+                }else{
+                    prodId += prdLine.getCopia_product_id_();
+                    quantity += prdLine.getQuantity_();
+                }
+            }
+            Functions func = new Functions(dbConn);
+            int order_id = func.createOrder(prodId,agentIds, phone, quantity, date_delivery);
+            Log.e("The Order Id:", Integer.toString(order_id));
+        }
     }
 }
