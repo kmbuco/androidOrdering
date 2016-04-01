@@ -195,7 +195,7 @@ public class Functions {
     }
 
     //place an
-    public int createOrder(String productIds, String agentIds, String phone, String quantities,String date_delivery){
+    public int createOrder(String productIds, String agentIds, String phone, String quantities,String date_delivery, String sOrderId){
         Object  [] prodDetails;
         Object  [] custDetails;
         Object  [] agentDetails;
@@ -435,11 +435,16 @@ public class Functions {
             Log.e("The args are : "," Them args is >>>>>>>>>>>>>>>>"+ args);
             order_id = (int)client.execute("execute", args);
             Log.e("Result : "," Them result is >>>>>>>>>>>>>>>>"+ order_id);
-            dbconnector.updateOrderTable(order.getOrder_id(),
-                    order.getCust_phone_(),
-                    order.getDate_time_(),
-                    order.getExpected_delivery_date_()
-                    , "1",order.getAgent_id_());
+            Log.e("Update : "," Order ID "+ order_id+ " Cust Phone: "+phone + " Order_Date_time "+order.getDate_time_()+ " order expected delivery date: " +order.getExpected_delivery_date_()
+            +" Agent id: "+agentIds);
+
+            // get the order before updating the table
+            //2 sync orders 0 not sent orders 1 sent orders
+            dbconnector.updateOrderTable(sOrderId,
+                    phone,
+                    date_time,
+                    date_delivery
+                    , "1",agentIds);
         }catch(Exception ex){
             ex.printStackTrace();
         }

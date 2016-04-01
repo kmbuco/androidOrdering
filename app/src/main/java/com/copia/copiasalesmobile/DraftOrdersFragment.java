@@ -37,7 +37,7 @@ public class DraftOrdersFragment extends ListFragment {
     String[] items = {"Details...", "Edit Customer", "Delete Order"};
     public String sOrderID = "";
 
-    public CursorAdapter conAdapter;
+    public CursorAdapter conAdapterDraft;
 
     private static final String TAG_ORDER_ID = "_id";
     private static final String TAG_CUST_PHONE = "cust_phone_";
@@ -62,11 +62,11 @@ public class DraftOrdersFragment extends ListFragment {
         tvDateTime = (TextView) getActivity().findViewById(R.id.pending_list_date_time);
 
         //map id, phone, datetime to a TextView
-        conAdapter = new SimpleCursorAdapter(getActivity(), R.layout.order_item_card, null,
+        conAdapterDraft = new SimpleCursorAdapter(getActivity(), R.layout.order_item_card, null,
                 new String[]{TAG_ORDER_ID, TAG_CUST_PHONE, TAG_DATE_TIME, TAG_TYPE},
                 new int[]{R.id.pending_list_order_id, R.id.pending_list_cust_phone, R.id.pending_list_date_time,
                         R.id.pending_list_type});
-        setListAdapter(conAdapter); // set adapter
+        setListAdapter(conAdapterDraft); // set adapter
 
     }
 
@@ -80,22 +80,22 @@ public class DraftOrdersFragment extends ListFragment {
     @Override
     public void onResume() {
         super.onResume();
-        new GetPendingLite().execute();
+        new GetPendingDraftLite().execute();
     }
 
     @SuppressWarnings("deprecation")
     @Override
     public void onStop() {
-        Cursor cursor = conAdapter.getCursor();
+        Cursor cursor = conAdapterDraft.getCursor();
 
         if (cursor != null)
             cursor.deactivate();
 
-        conAdapter.changeCursor(null);
+        conAdapterDraft.changeCursor(null);
         super.onStop();
     }
 
-    private class GetPendingLite extends AsyncTask<Object, Object, Cursor> {
+    private class GetPendingDraftLite extends AsyncTask<Object, Object, Cursor> {
         DatabaseConnectorSqlite dbConnector = new DatabaseConnectorSqlite(getActivity());
         ProgressDialog progress = new ProgressDialog(getActivity());
 
@@ -112,7 +112,7 @@ public class DraftOrdersFragment extends ListFragment {
             dbConnector.open();
             try {
                 //return dbConnector.getAllOrders();
-                return dbConnector.getOrders("1");
+                return dbConnector.getOrders("2");
             } catch (Exception e) {
                 return null;
             }
@@ -120,7 +120,7 @@ public class DraftOrdersFragment extends ListFragment {
 
         @Override
         protected void onPostExecute(Cursor result) {
-            conAdapter.changeCursor(result); // set the adapter's Cursor
+            conAdapterDraft.changeCursor(result); // set the adapter's Cursor
             dbConnector.close();
             progress.dismiss();
 
@@ -195,7 +195,7 @@ public class DraftOrdersFragment extends ListFragment {
         viewCon.putExtra("order_id", sOrderID);
         viewCon.putExtra("cphone", sCustPhone);
         viewCon.putExtra("ctype", sCustType);
-        viewCon.putExtra("orderStatus", "1");  //order already made
+        viewCon.putExtra("orderStatus", "2");  //order in pending
         startActivity(viewCon);
     }
 
@@ -249,7 +249,7 @@ public class DraftOrdersFragment extends ListFragment {
 
         @Override
         protected void onPostExecute(Cursor result) {
-            conAdapter.changeCursor(result); // set the adapter's Cursor
+            conAdapterDraft.changeCursor(result); // set the adapter's Cursor
             dbConnector.close();
         }
 

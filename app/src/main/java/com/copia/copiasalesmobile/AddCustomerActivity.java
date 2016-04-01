@@ -36,10 +36,11 @@ public class AddCustomerActivity extends AppCompatActivity {
     public Integer int_year, int_month, int_date, int_hour, int_min, int_sec;
     AlertDialogManager alert = new AlertDialogManager();
     String hrs = "hrs";
+    String sAgent_id = "";
     SharedPreferences sharedpreferences;
     SharedPreferences.Editor editor;
     public SimpleAdapter conAdapter;
-    public String sOrderID = "", sEnterPhone = "", sCheckPhone = "", sNewID = "", sType = "",sDeliveryDate= "";
+    public String sOrderID = "", sEnterPhone = "", sCheckPhone = "", sNewID = "", sType = "",sDeliveryDate= "", sOrder_Status ="", sDate_time ="";
 
     public static final int DATE_DIALOG_ID_FOR = 0;
     public DatePicker date_picker;
@@ -166,6 +167,7 @@ public class AddCustomerActivity extends AppCompatActivity {
                                 "Alert!",
                                 "Order for the entered customer phone number is already created. " +
                                         "Thank you :-)", false);
+                    moveToOrder();
                 } else {
                     saveOrder();
                 }
@@ -213,8 +215,66 @@ public class AddCustomerActivity extends AppCompatActivity {
                     };
             saveOrderTask.execute((Object[]) null);
         }
-    }
 
+
+
+}
+
+    private void moveToOrder() {
+        AsyncTask<Object, Object, Object> moveToOrderTask =
+                new AsyncTask<Object, Object, Object>() {
+                    @Override
+                    protected Object doInBackground(Object... params) {
+                        updateOrderTable();
+                        return null;
+                    }
+
+                    private void updateOrderTable() {
+                        DatabaseConnectorSqlite dbConnector = new DatabaseConnectorSqlite(
+                                AddCustomerActivity.this);
+                        //sDeliveryDate = getDeliveryDate();
+                        dbConnector.open();
+                        Cursor result =  dbConnector.getOrderID(sEnterPhone);
+
+                        result.moveToFirst();
+                        do {
+                            // get the column index for the data item
+                            int idIndex = result.getColumnIndex("_id");
+                            int agentIdIndex = result.getColumnIndex("agent_id_");
+                            int statusIndex = result.getColumnIndex("order_status_");
+                            int phoneIndex = result.getColumnIndex("cust_phone_");
+                            int datesIndex = result.getColumnIndex("date_time_");
+                            int deliveryDateIndex = result.getColumnIndex("expected_delivery_date_");
+                            tvOrderID.setText(result.getString(idIndex));
+                            sOrderID = result.getString(idIndex);
+                            sCheckPhone = result.getString(phoneIndex);
+                            sAgent_id = result.getString(agentIdIndex);
+                            sOrder_Status = result.getString(statusIndex);
+                            sDate_time = result.getString(datesIndex);
+                            sDeliveryDate = result.getString(deliveryDateIndex);
+                            sNewID = tvOrderID.getText().toString();
+                        } while (result.moveToNext());
+
+                        result.close();
+                        dbConnector.close();
+
+                        Log.e("The update: ", sOrderID + " " + sCheckPhone + " " + sDate_time+" "+ sDeliveryDate+ " " +sAgent_id +" "+sOrder_Status);
+                        dbConnector.updateOrderTable(sOrderID,
+                                sCheckPhone,
+                                sDate_time,
+                                sDeliveryDate
+                                , "0",sAgent_id);
+
+                        //finish();
+                    }
+
+                    @Override
+                    protected void onPostExecute(Object result) {
+                        new getOrderID().execute(sEnterPhone);
+                    }
+                };
+        moveToOrderTask.execute((Object[]) null);
+    }
     private String getDeliveryDate() {
         String date = "";
         String current_date;
@@ -277,12 +337,23 @@ public class AddCustomerActivity extends AppCompatActivity {
             do {
                 // get the column index for the data item
                 int idIndex = result.getColumnIndex("_id");
+                int agentIdIndex = result.getColumnIndex("agent_id_");
+                int statusIndex = result.getColumnIndex("order_status_");
+                int datesIndex = result.getColumnIndex("date_time_");
+                int deliveryDateIndex = result.getColumnIndex("expected_delivery_date_");
                 tvOrderID.setText(result.getString(idIndex));
+                sAgent_id = result.getString(agentIdIndex);
+                sOrder_Status = result.getString(statusIndex);
+                sDate_time = result.getString(datesIndex);
+                sDeliveryDate = result.getString(deliveryDateIndex);
                 sNewID = tvOrderID.getText().toString();
             } while (result.moveToNext());
 
             result.close();
             dbConnector.close();
+
+
+            //moveToOrder();
 
             Intent nwIntent = new Intent(AddCustomerActivity.this, OrderActivity.class);
             nwIntent.putExtra("order_id", sNewID);
@@ -290,6 +361,12 @@ public class AddCustomerActivity extends AppCompatActivity {
             nwIntent.putExtra("ctype", sType);
             nwIntent.putExtra("cdate", sType);
             nwIntent.putExtra("cdeliverydate", sDeliveryDate);
+            if(sAgent_id != null && !sAgent_id.equals("")){
+                nwIntent.putExtra("cagent_id", sAgent_id);
+            }else{
+                nwIntent.putExtra("cagent_id", "");
+            }
+            nwIntent.putExtra("orderStatus", "0");
             startActivity(nwIntent);
         }
     }

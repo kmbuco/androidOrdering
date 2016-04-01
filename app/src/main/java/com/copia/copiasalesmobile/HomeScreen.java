@@ -4,6 +4,7 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.Context;
 import android.content.Intent;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -19,10 +20,12 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.copia.copiasalesmobile.SQLite.DatabaseConnectorSqlite;
 import com.copia.copiasalesmobile.services.ServiceSyncAgent;
+import com.copia.copiasalesmobile.services.ServiceSyncOrders;
 import com.copia.copiasalesmobile.services.ServiceSyncProd;
 import com.copia.copiasalesmobile.utilities.AlertDialogManagerCancelSettings;
 import com.copia.copiasalesmobile.utilities.CheckConnection;
@@ -58,6 +61,15 @@ public class HomeScreen extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_screen);
 
+        /*FloatingActionButton fab = (FloatingActionButton)findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(HomeScreen.this, AddCustomerActivity.class);
+                startActivity(i);
+            }
+        });
+*/
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -105,9 +117,9 @@ public class HomeScreen extends AppCompatActivity {
 
     private void setupViewPager(ViewPager viewPager) {
         Adapter adapter = new Adapter(getSupportFragmentManager());
-        adapter.addFragment(new CustomersOrdersFragment(), "Customers Orders");
-        adapter.addFragment(new DraftOrdersFragment(), "Draft Orders");
-        adapter.addFragment(new SalesOrdersFragment(), "Sales Orders");
+        adapter.addFragment(new SalesOrdersFragment(), "Saved Orders");
+        adapter.addFragment(new DraftOrdersFragment(), "Pending Orders");
+        adapter.addFragment(new CustomersOrdersFragment(), "Sale Orders");
         viewPager.setAdapter(adapter);
     }
 
@@ -125,7 +137,7 @@ public class HomeScreen extends AppCompatActivity {
                         }
                         //nav_sync_orders
                         else if (menuItem.getItemId() == R.id.nav_sync_orders){
-                            Intent srv = new Intent(getApplicationContext(), ServiceSyncAgent.class);
+                            Intent srv = new Intent(getApplicationContext(), ServiceSyncOrders.class);
                             startService(srv);
                             return true;
                         }else if (menuItem.getItemId() == R.id.nav_sync_prod){

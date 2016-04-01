@@ -72,7 +72,7 @@ public class OrderActivity extends AbstractBaseActivity {
 
     ListView mDrawerList;
     RelativeLayout mDrawerPane;
-    String sOrderStatus;
+    String sOrderStatus = "0";
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout mDrawerLayout;
     private Toolbar toolbar;
@@ -129,6 +129,7 @@ public class OrderActivity extends AbstractBaseActivity {
 
         setToolBarIcon(R.drawable.ic_shopping_cart);
         setToolBarTitle(getResources().getString(R.string.app_name));
+
 
         tvName = (TextView)findViewById(R.id.txt_agent_name);
         tvPhone = (TextView)findViewById(R.id.txt_agent_phone);
@@ -394,7 +395,7 @@ public class OrderActivity extends AbstractBaseActivity {
             }
         });
 
-        if(sOrderStatus.equals("1")){ //order has already been made disable the controls.
+        if(sOrderStatus != null && sOrderStatus.equals("1")){ //order has already been made disable the controls.
             btnSend.setVisibility(View.GONE);
             btnAdd.setVisibility(View.GONE);
             TextInputLayout txtAgentName = (TextInputLayout) findViewById(R.id.wrapper_name);
@@ -405,7 +406,7 @@ public class OrderActivity extends AbstractBaseActivity {
             txtProdName.setVisibility(View.GONE);
             searchProd.setVisibility(View.GONE);
             searchName.setVisibility(View.GONE);
-        }if(sOrderStatus.equals("0")) { //order has already been made disable the controls.
+        }if(sOrderStatus == null || sOrderStatus.equals("0")||sOrderStatus.equals("2") ) { //order has not been made enable the controls.
             btnSend.setVisibility(View.VISIBLE);
             btnAdd.setVisibility(View.VISIBLE);
             TextInputLayout txtAgentName = (TextInputLayout) findViewById(R.id.wrapper_name);
@@ -549,12 +550,14 @@ public class OrderActivity extends AbstractBaseActivity {
         }else if(sAgentId.isEmpty()){
 
         }else{
-            Log.e("", sAgentId);
+            Log.e("The Agent ID", sAgentId);
             Agent agent = new Agent();
+            dbconnector.checkAgentIds();
             agent = dbconnector.getAgent(sAgentId);
-            tvName.setText(agent.getName());
+            /*tvName.setText(agent.getName());
             tvPhone.setText(agent.getPhone());
-            tvAgentId.setText(agent.getId());
+            tvAgentId.setText(agent.getId());*/
+            myAutoAgentComplete.setText(agent.getName());
             String agentName = agent.getName();
 
             myAutoAgentComplete.setText(agentName);
@@ -1045,18 +1048,21 @@ public class OrderActivity extends AbstractBaseActivity {
 
                 if(utilityConn.isOnline()){
 
-                    order_id = func.createOrder(product_codes, sAgentId ,sCPhone,product_quantity,sDeliveryDate);
+                    order_id = func.createOrder(product_codes, sAgentId ,sCPhone,product_quantity,sDeliveryDate,sOrderID);
                 }else{
 
                     String date_time = order.getDate_time_();
                     //store the order to be sent later
-                    Log.e("The Order: ", "OrderId "+ sOrderID + "Phone"+ sCPhone +" date_time "+ order.getDate_time_() + " sDeliveryDate "+ sDeliveryDate);
+                    //2 sync orders 0 not sent orders 1 sent orders
+                    Log.e("The Order: ", "OrderId " + sOrderID + "Phone" + sCPhone + " date_time " + order.getDate_time_() + " sDeliveryDate " + sDeliveryDate);
                     dbConnector.updateOrderTable(sOrderID,
                             sCPhone,
                             date_time,
                             sDeliveryDate
-                            ,"1",order.getAgent_id_());
-                    PDialog.dismiss();
+                            , "2", sAgentId);
+                    if(PDialog!= null){
+                        PDialog.dismiss();
+                    }
                 }
                 Log.e("The order ID", Integer.toString(order_id));
 
@@ -1066,7 +1072,9 @@ public class OrderActivity extends AbstractBaseActivity {
             @Override
             protected void onPostExecute(Integer order_id) {
                 Log.e("The order ID", order_id.toString());
-                PDialog.dismiss();
+                if (PDialog != null){
+                    PDialog.dismiss();
+                }
             }
 
         }

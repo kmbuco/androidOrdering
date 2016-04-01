@@ -16,6 +16,7 @@ import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -86,14 +87,14 @@ public class CustomersOrdersFragment extends ListFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.listview_order_main, container, false);
-        FloatingActionButton fab = (FloatingActionButton)rootView.findViewById(R.id.fab);
+        /*FloatingActionButton fab = (FloatingActionButton)rootView.findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(getActivity(), AddCustomerActivity.class);
                 startActivity(i);
             }
-        });
+        });*/
         return rootView;
     }
 
@@ -132,15 +133,20 @@ public class CustomersOrdersFragment extends ListFragment {
             dbConnector.open();
             try {
                 //return dbConnector.getAllOrders();
-                return dbConnector.getOrders("0");
+                return dbConnector.getOrders("1");
             } catch (Exception e) {
+                Log.e("MYAPP", "exception", e);
                 return null;
             }
         }
 
         @Override
         protected void onPostExecute(Cursor result) {
-            conAdapter.changeCursor(result); // set the adapter's Cursor
+            if(result.getCount() ==0){
+
+            }else{
+                conAdapter.changeCursor(result); // set the adapter's Cursor
+            }
             dbConnector.close();
             progress.dismiss();
 
@@ -221,7 +227,7 @@ public class CustomersOrdersFragment extends ListFragment {
         viewCon.putExtra("cphone", sCustPhone);
         viewCon.putExtra("ctype", sCustType);
         viewCon.putExtra("cagent_id", order.getAgent_id_());
-        viewCon.putExtra("orderStatus", "0");
+        viewCon.putExtra("orderStatus", "1");
         startActivity(viewCon);
     }
 

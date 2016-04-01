@@ -35,9 +35,15 @@
         <service
             android:name=".services.ServiceSyncImages"
             android:enabled="true" />
+
         <service
             android:name=".services.ServiceSyncProd"
             android:enabled="true" />
+
+        <service
+            android:name=".services.ServiceSyncOrders"
+            android:enabled="true" />
+
         <service
             android:name=".services.SyncService"
             android:exported="true"

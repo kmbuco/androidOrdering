@@ -437,6 +437,29 @@ public class DatabaseConnectorSqlite {
         return ObjectItemData;
     }
 
+    public void checkAgentIds(){
+        String sql = "SELECT _id, agent_name, agent_number, write_date_,experiment_id FROM lite_agent";
+        open();
+        Cursor cursor = database.rawQuery(sql, null);
+        cursor.getCount();
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                        String sAgentId = cursor.getString(cursor.getColumnIndex("_id"));
+                        String sAgent_name = cursor.getString(cursor.getColumnIndex("agent_name"));
+                        String sAgent_number = cursor.getString(cursor.getColumnIndex("agent_number"));
+                        String sWrite_date_ = cursor.getString(cursor.getColumnIndex("write_date_"));
+                        String sExperiment_id =  cursor.getString(cursor.getColumnIndex("experiment_id"));
+
+
+                    Log.e("the IDS sql : ", sql);
+                    Log.e("The fields : ", "Agent Ids : "+sAgentId);
+                } while (cursor.moveToNext());
+            }
+        }
+        close();
+
+    }
 
     public Agent getAgent(String sagent_id){
         //lite_agent(_id, agent_name, agent_number, write_date_,experiment_id)
@@ -450,7 +473,7 @@ public class DatabaseConnectorSqlite {
         Agent agent = new Agent();
 
         sql += "SELECT _id, agent_name, agent_number, write_date_,experiment_id FROM " + DATABASE_TABLE;
-        sql += " WHERE  _id = "+ sagent_id;
+        sql += " WHERE  (_id = '"+ sagent_id.trim() + "')";
 
 
         Log.e("the getAgents sql : ", sql);
@@ -470,6 +493,7 @@ public class DatabaseConnectorSqlite {
                     String sWrite_date_ = cursor.getString(cursor.getColumnIndex("write_date_"));
                     String sExperiment_id =  cursor.getString(cursor.getColumnIndex("experiment_id"));
 
+                    Log.e("The Agent ID: ",sAgentId);
                     agent.setId(sAgentId);
                     agent.setName(sAgent_name);
                     agent.setPhone(sAgent_number);
@@ -561,7 +585,7 @@ public class DatabaseConnectorSqlite {
 
     //Order operations
     public Cursor getOrderID(String sCPhone) {
-        return database.query("order_table", new String[]{"_id"}, "cust_phone_" + " = '" + sCPhone + "'", null, null, null, null);
+        return database.query("order_table", new String[]{"_id,agent_id_,order_status_,cust_phone_,date_time_,expected_delivery_date_"}, "cust_phone_" + " = '" + sCPhone + "'", null, null, null, null);
     }
 
 
@@ -673,11 +697,12 @@ public class DatabaseConnectorSqlite {
         //get all sync orders from order table into an arrayList
         //iterate over the arrayList of orders and add the order lines
         open();
-        Cursor cursor =  database.query("order_table", new String[]{"_id", "cust_phone_", "date_time_", "type_","expected_delivery_date_","order_status_","agent_id_"}, "order_status_" + " = 0",
+        Cursor cursor =  database.query("order_table", new String[]{"_id", "cust_phone_", "date_time_", "type_","expected_delivery_date_","order_status_","agent_id_"}, "order_status_" + " = '2' ",
                 null, null, null, "_id");
 
         if (cursor != null) {
             if (cursor.moveToFirst()) {
+                do{
                 ordProdLine = new OrderProdLines();
                 sOrderID = cursor.getString(cursor.getColumnIndex("_id"));
                 scust_phone_ = cursor.getString(cursor.getColumnIndex("cust_phone_"));
@@ -696,14 +721,15 @@ public class DatabaseConnectorSqlite {
                         null, null, null, "_id");
                 if (cursorLine != null) {
                     if (cursorLine.moveToFirst()) {
+                        do{
                         pdtLine = new productLine();
-                        code_ = cursor.getString(cursor.getColumnIndex("code_"));
-                        name_ = cursor.getString(cursor.getColumnIndex("name_"));
-                        price_ = cursor.getString(cursor.getColumnIndex("price_"));
-                        quantity_ = cursor.getString(cursor.getColumnIndex("quantity_"));
-                        comm_ = cursor.getString(cursor.getColumnIndex("comm_"));
-                        total_ = cursor.getString(cursor.getColumnIndex("total_"));
-                        copia_product_id_ = cursor.getString(cursor.getColumnIndex("copia_product_id_"));
+                        code_ = cursorLine.getString(cursorLine.getColumnIndex("code_"));
+                        name_ = cursorLine.getString(cursorLine.getColumnIndex("name_"));
+                        price_ = cursorLine.getString(cursorLine.getColumnIndex("price_"));
+                        quantity_ = cursorLine.getString(cursorLine.getColumnIndex("quantity_"));
+                        comm_ = cursorLine.getString(cursorLine.getColumnIndex("comm_"));
+                        total_ = cursorLine.getString(cursorLine.getColumnIndex("total_"));
+                        copia_product_id_ = cursorLine.getString(cursorLine.getColumnIndex("copia_product_id_"));
 
                         pdtLine.setCode_(code_);
                         pdtLine.setName_(name_);
@@ -713,11 +739,13 @@ public class DatabaseConnectorSqlite {
                         pdtLine.setTotal_(total_);
                         pdtLine.setCopia_product_id_(copia_product_id_);
                         orderArrayList.add(pdtLine);
+                        }while(cursorLine.moveToNext());
                     }
 
                 }
                 ordProdLine.setArrProdLines(orderArrayList);
                 orderProdArrayList.add(ordProdLine);
+                }while(cursor.moveToNext());
             }
         }
         close();
@@ -737,7 +765,7 @@ public class DatabaseConnectorSqlite {
 
 
         sql += "SELECT _id, cust_phone_, date_time_, type_, expected_delivery_date_, order_status_ FROM " + DATABASE_TABLE;
-        sql += " WHERE (" + FIELD_NAME + " LIKE '%" + orderStatus + "%')";
+        sql += " WHERE (" + FIELD_NAME + " = '" + orderStatus + "')";
         sql += " ORDER BY " + FIELD_NAME + " DESC";
 
 
@@ -758,7 +786,10 @@ public class DatabaseConnectorSqlite {
 
 
     public Cursor checkPhoneExists(String sCPhone) {
-        return database.query("order_table", null, "cust_phone_" + " = '" + sCPhone + "'", null, null, null, null);
+        return database.query("order_table", null, "cust_phone_" + " = '" + sCPhone + "' and (order_status_ = '0' or order_status_ = '2') ", null, null, null, null);
+    }
+    public Cursor checkPhoneExistsPending(String sCPhone) {
+        return database.query("order_table", null, "cust_phone_" + " = '" + sCPhone + "' and order_status_ = '2' ", null, null, null, null);
     }
 
     /****
@@ -788,7 +819,12 @@ public class DatabaseConnectorSqlite {
         editCon.put("expected_delivery_date_",sDeliveryDate);
         editCon.put("order_status_", sStatus);
         editCon.put("agent_id_", sAgentId);
-        Log.e("update Id: ", sAgentId);
+        if (sAgentId!= null){
+            Log.e("update Id: ", "Agent Id is null");
+        }else{
+            Log.e("update Id: ",sAgentId);
+        }
+
 
         open();
         //database.update("order_table", editCon, "_id" +" = '"+sOrderID+"'", null);
