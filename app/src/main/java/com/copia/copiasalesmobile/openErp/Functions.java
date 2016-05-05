@@ -306,7 +306,6 @@ public class Functions {
         custList.add(custId);
         custDetails = read(paramCustomer,custList,tableName);
 
-
         //create the product Order lines
         Object res = null;
         LinkedHashMap<String, Object> linked_vals = new LinkedHashMap<String, Object>();//use linkedHashMap to maintain Order

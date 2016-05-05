@@ -28,6 +28,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 public class AddCustomerActivity extends AppCompatActivity {
+    //add the reference if exists
     public static final String MyPREFERENCES = "MyPrefs" ;
     public EditText edPhone;
     public TextView tvDateTime, tvPhoneExists, tvOrderID;
@@ -423,9 +424,9 @@ public class AddCustomerActivity extends AppCompatActivity {
                               int dayOfMonth) {
 
             int_year = year;
-            int_month = monthOfYear;
+            int_month = monthOfYear+1; //month is zero based so add 1
+            int_date = dayOfMonth;
 
-            //get last day of month
             Calendar cal = new GregorianCalendar();
             cal.set(Calendar.DATE, dayOfMonth);
             cal.set(Calendar.MONTH, monthOfYear);
@@ -438,9 +439,9 @@ public class AddCustomerActivity extends AppCompatActivity {
         }
     };
     private void displayDate() {
+        sDeliveryDate = int_year+"-"+int_month+"-"+int_date;
         tv_show_date_for.setText(new StringBuilder()
-                // Month is 0 based so add 1
-                .append(int_year).append("-").append(int_month + 1).append("-").append(int_date));
+                .append(int_year).append("-").append(int_month).append("-").append(int_date));
     }
 
 

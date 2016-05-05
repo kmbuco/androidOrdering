@@ -21,6 +21,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.copia.copiasalesmobile.SQLite.DatabaseConnectorSqlite;
@@ -70,6 +71,15 @@ public class HomeScreen extends AppCompatActivity {
             }
         });
 */
+        Button btnAddOrder= (Button) findViewById(R.id.btnAddOrder);
+        btnAddOrder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(HomeScreen.this, AddCustomerActivity.class);
+                startActivity(i);
+            }
+        });
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 

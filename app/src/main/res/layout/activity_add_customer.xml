@@ -1,6 +1,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="#ffffff">
 
     <LinearLayout
@@ -80,6 +81,7 @@
             <TextView
                 android:id="@+id/show_date_for"
                 style="@style/StyleSideItems"
+                android:textSize="14dp"
                 android:layout_weight="1"
                 android:text="eg 2014-05-31" />
 
@@ -92,10 +94,45 @@
                 android:drawableLeft="@drawable/calender"
                 android:text="Set Date"
                 android:textColor="#FFFCFC"
-                android:textSize="14sp"
+                android:textSize="12dp"
                 android:typeface="sans" />
 
         </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/layout_ref"
+            android:layout_width="fill_parent"
+            android:layout_below="@+id/toolbar"
+            android:layout_height="wrap_content"
+            android:padding="10sp">
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/wrapper_ref"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
+
+                <com.copia.copiasalesmobile.utilities.CustomAutoCompleteView
+                    android:layout_gravity="center_horizontal"
+                    android:id="@+id/input_ref"
+                    android:drawableLeft="@drawable/app_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="12dp"
+                    android:hint="Enter Customer Reference... "></com.copia.copiasalesmobile.utilities.CustomAutoCompleteView>
+
+
+            </android.support.design.widget.TextInputLayout>
+            <ImageButton
+                android:id="@+id/btnSearchName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_alignRight="@+id/wrapper_ref"
+                android:background="@drawable/person_sync"
+                android:clickable="true"
+                />
+        </RelativeLayout>
 
         <Button
             android:id="@+id/btnAddCustPhone"

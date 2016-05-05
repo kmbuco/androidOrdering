@@ -363,7 +363,7 @@ public class OrderActivity extends AbstractBaseActivity {
         btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Send via iinternet
+                //Send via internet
                 if(myAutoAgentComplete.getText().equals("")){
                     alert_.showAlertDialog(OrderActivity.this,
                             "Submission Failed...",
@@ -971,11 +971,12 @@ public class OrderActivity extends AbstractBaseActivity {
                 tvGrandTotalComm.setText("");
                 TextView TvAgentId = (TextView) findViewById(R.id.txt_agent_id);
 
-                pDialog = new ProgressDialog(OrderActivity.this);
-                pDialog.setMessage("Sending Order...Please wait!");
-                pDialog.setIndeterminate(false);
-                pDialog.setCancelable(true);
-                pDialog.show();
+                //pDialog = new ProgressDialog(OrderActivity.this);
+                //pDialog.setMessage("Sending Order...Please wait!");
+                //pDialog.setIndeterminate(false);
+                //pDialog.setCancelable(true);
+                pDialog =  ProgressDialog.show(OrderActivity.this, "", "Sending Order...Please wait!");
+                //pDialog.show();
             }
 
             @Override
@@ -1071,17 +1072,16 @@ public class OrderActivity extends AbstractBaseActivity {
 
             @Override
             protected void onPostExecute(Integer order_id) {
+                super.onPostExecute(order_id);
                 Log.e("The order ID", order_id.toString());
-                if (PDialog != null){
-                    PDialog.dismiss();
+                if (pDialog != null){
+                    pDialog.dismiss();
                 }
+                Intent intent = new Intent(getApplicationContext(),HomeScreen.class);
+                startActivity(intent);
             }
 
         }
-
-
-
-
 
     private class checkCopiaIDExists extends AsyncTask<String, Object, Cursor> {
         DatabaseConnectorSqlite dbConnector = new DatabaseConnectorSqlite(OrderActivity.this);
