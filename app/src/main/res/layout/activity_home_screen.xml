@@ -10,25 +10,6 @@
     <include layout="@layout/include_list_viewpager" />
 
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <ProgressBar
-            style="?android:attr/progressBarStyleSmall"
-            android:padding="@dimen/activity_horizontal_margin"
-            android:layout_width="31dp"
-            android:layout_height="31dp"
-            android:id="@+id/progressBar"
-            android:layout_gravity="left|top" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="#FFFFFF"
-            android:textSize="32sp"
-            android:text="text"/>
-    </LinearLayout>
-
     <android.support.design.widget.NavigationView
         android:id="@+id/nav_view"
         android:layout_width="wrap_content"

@@ -2,14 +2,18 @@ package com.copia.copiasalesmobile;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -17,6 +21,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -44,7 +49,7 @@ public class HomeScreen extends AppCompatActivity {
     // The account name
     public static final String ACCOUNT = "copiasyncaccount";
 
-
+    ProgressDialog pDialog;
 
     AlertDialogManagerCancelSettings alert_cs = new AlertDialogManagerCancelSettings();
     private DrawerLayout mDrawerLayout;
@@ -61,6 +66,11 @@ public class HomeScreen extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_screen);
+        // Register to receive finished sync notifications.
+        // We are registering an observer (mMessageReceiver) to receive Intents
+        // with actions named "custom-event-name".
+        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
+                new IntentFilter("custom-event-name"));
 
         /*FloatingActionButton fab = (FloatingActionButton)findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -150,13 +160,12 @@ public class HomeScreen extends AppCompatActivity {
                             Intent srv = new Intent(getApplicationContext(), ServiceSyncOrders.class);
                             startService(srv);
                             return true;
-                        }else if (menuItem.getItemId() == R.id.nav_sync_prod){
-                            Intent srv = new Intent(getApplicationContext(), ServiceSyncProd.class);
-                            startService(srv);
-                            return true;
                         }else if (menuItem.getItemId() == R.id.nav_sync_agents){
+                            pDialog =  ProgressDialog.show(HomeScreen.this, "", "Syncing Device...Please wait!");
                             Intent srv = new Intent(getApplicationContext(), ServiceSyncAgent.class);
                             startService(srv);
+                            Intent srvProd = new Intent(getApplicationContext(), ServiceSyncProd.class);
+                            startService(srvProd);
                             return true;
                         }
                        /*else if (menuItem.getItemId() == R.id.nav_home){
@@ -313,5 +322,25 @@ public class HomeScreen extends AppCompatActivity {
         // Don't let the system handle the back button
         //Intent intDB = new Intent(getApplicationContext(), DashBoard.class);
         //startActivity(intDB);
+    }
+    // Our handler for received Intents. This will be called whenever an Intent
+// with an action named "custom-event-name" is broadcasted.
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Get extra data included in the Intent
+            String message = intent.getStringExtra("message");
+            Log.e("receiver", "Got message: " + message);
+            if(pDialog != null){
+                pDialog.dismiss();
+            }
+        }
+    };
+
+    @Override
+    protected void onDestroy() {
+        // Unregister since the activity is about to be closed.
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+        super.onDestroy();
     }
 }

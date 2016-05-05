@@ -1,11 +1,13 @@
 package com.copia.copiasalesmobile.services;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.copia.copiasalesmobile.SQLite.DatabaseConnectorSqlite;
@@ -21,10 +23,15 @@ public class ServiceSyncAgent extends Service {
     DatabaseConnectorSqlite dbConn;
     String write_date;
     ArrayList<Agent> agents;
+    //add broadcast
+    private static final String CLASS_NAME = ServiceSyncAgent.class.getSimpleName();
+    private Context ctx;
+
 
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
+        ctx = getApplicationContext();
         return null;
     }
 
@@ -66,7 +73,8 @@ public class ServiceSyncAgent extends Service {
         }
     }
 
-    private class getAgent extends com.copia.copiasalesmobile.services.getAgent {
+
+    private class getAgent extends AsyncTask<String, String, String> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -86,8 +94,25 @@ public class ServiceSyncAgent extends Service {
             return null;
         }
         @Override
-        protected void onPostExecute(){
-
+        protected void onPostExecute(String result){
+            super.onPostExecute(result);
+            Log.e("The Sync is done:" ,"All agents synced: ");
+            ProgressMessage prog = new ProgressMessage();
+            prog.sendMessage();
         }
     }
+
+    private class ProgressMessage{
+        // Send an Intent with an action named "custom-event-name". The Intent sent should
+        // be received by the ReceiverActivity.
+        private void sendMessage() {
+            Log.d("sender", "Broadcasting message");
+            Intent intent = new Intent("custom-event-name");
+            // You can also include some extra data.
+            intent.putExtra("message", "This is my message!");
+            LocalBroadcastManager.getInstance(ctx).sendBroadcast(intent);
+        }
+    }
+
+
 }

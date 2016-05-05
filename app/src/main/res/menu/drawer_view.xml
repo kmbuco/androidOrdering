@@ -56,13 +56,9 @@
     <item android:title="Sales Rep Menus">
         <menu>
             <item
-                android:id="@+id/nav_sync_prod"
-                android:icon="@drawable/person_nav"
-                android:title="Sync Products" />
-            <item
                 android:id="@+id/nav_sync_agents"
-                android:icon="@drawable/person_sync"
-                android:title="Sync Agents" />
+                android:icon="@mipmap/ic_launcher"
+                android:title="Sync Device" />
             </menu>
     </item>
 
