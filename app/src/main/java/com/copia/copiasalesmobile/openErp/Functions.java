@@ -62,7 +62,7 @@ public class Functions {
     public int Login(String username, String password){
         int login = 0;
         Object[] ObjectParam = { "login", "=", username};
-        Object[] ObjectParam1 = { "password_crypt", "=", password };
+        Object[] ObjectParam1 = { "password", "=", password };
 
 
         ArrayList<Object[]> listparam = new ArrayList<Object[]>();
@@ -195,7 +195,7 @@ public class Functions {
     }
 
     //place an
-    public int createOrder(String productIds, String agentIds, String phone, String quantities,String date_delivery, String sOrderId){
+    public int createOrder(String productIds, String agentIds, String phone, String quantities,String date_delivery, String sOrderId,String ref){
         Object  [] prodDetails;
         Object  [] custDetails;
         Object  [] agentDetails;
@@ -325,6 +325,7 @@ public class Functions {
         int a = 1;
         for(Object obj:prodList){
             Log.e("the objects",obj.toString());
+            linked_vals = new LinkedHashMap<String, Object>();
 
             HashMap hash = (HashMap)obj;
             String prod_name = (String) hash.get("name");
@@ -355,13 +356,20 @@ public class Functions {
             linked_vals.put("weight", prod_weight);
             linked_vals.put("product_uom_qty", product_uom_qty);
 
+            Log.e("Them Prod>>>>>","**********************************************************************");
+            Log.e("Them Prod>>>>>","**********************************************************************");
+            Log.e("Them Prod>>>>>","**********************************************************************");
+            Log.e("Them Prod>>>>>","**********************************************************************");
+            Log.e("Them Prod>>>>>","product_id " + prod_id +" name " +prod_name+ " prod_price "+prod_price + " taxObj " +taxObj+ "prod_weight" + prod_weight + "product_uom_qty" +product_uom_qty);
+
             Vector<Object> linearg = new Vector<>();
             linearg.add(0);
             linearg.add(0);
             linearg.add(linked_vals);
             Log.e("Them Linear Args",linearg.toString());
+            linearArr1.add(a-1,linearg);
             n.put("n"+a,linearg);
-            linearArr1.add(linearg);
+            //linearArr1.add(linearg);
             a++;
         }
 
@@ -409,7 +417,8 @@ public class Functions {
             vals.put("date_order",date_time);
             vals.put("copia_date_order",date_time);
             //vals.put("copia_date_order",expected_delivery_date);
-            vals.put("date_delivery",date_time);
+            vals.put("date_delivery",expected_delivery_date);
+            vals.put("client_order_ref",ref);
             //vals.put("date_delivery",expected_delivery_date);
             vals.put("order_line",linearArr);
             vals.put("mode",mode);

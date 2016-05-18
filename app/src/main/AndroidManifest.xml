@@ -19,7 +19,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".LoginActivity"
+            android:name=".LoginsActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -59,7 +59,8 @@
         <activity android:name=".AddCustomerActivity" />
         <activity android:name=".OrderItemDetailsActivity" />
         <activity android:name=".HomeScreen" />
-        <activity android:name=".DatePicker"></activity>
+        <activity android:name=".DatePicker" />
+        <activity android:name="com.copia.copiasalesmobile.LoginActivity"></activity>
     </application>
 
 </manifest>

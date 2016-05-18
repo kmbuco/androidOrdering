@@ -53,6 +53,7 @@ public class ServiceSyncOrders extends Service {
             String quantity = "";
             String prodId = "";
             String local_order_id = "";
+            String ref = "";
 
             for(OrderProdLines ord: ordProdLine){
                 //String productIds, String agentIds, String phone, String quantities,String date_delivery
@@ -61,6 +62,8 @@ public class ServiceSyncOrders extends Service {
                 phone = ord.getScust_phone_();
                 date_delivery = ord.getSexpected_delivery_date_();
                 agentIds = ord.getAgent_id_();
+                ref = ord.getsReference();
+
                 int x = 0;
                 for(productLine prdLine:ord.getArrProdLines()){
                     if(x==0){
@@ -73,7 +76,7 @@ public class ServiceSyncOrders extends Service {
                 }
                 Log.e("Order Deatails: ", "Prod Id :"+prodId + " agent ID "+agentIds+ " phone : "+phone+ " quantity "+ quantity + " Delivery : "+date_delivery);
                 Functions func = new Functions(dbConn);
-                int order_id = func.createOrder(prodId,agentIds, phone, quantity, date_delivery,local_order_id);
+                int order_id = func.createOrder(prodId,agentIds, phone, quantity, date_delivery,local_order_id,ref);
                 Log.e("The Order Id:", Integer.toString(order_id));
             }
             return null;

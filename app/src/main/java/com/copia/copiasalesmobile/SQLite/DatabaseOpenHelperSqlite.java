@@ -19,10 +19,11 @@ public class DatabaseOpenHelperSqlite extends SQLiteOpenHelper {
         String createUser= "CREATE TABLE lite_user(_id, user_name, password, write_date_);";
         String createProductImage= "CREATE TABLE product_image(_id, product_id_, image, date_time);";
         String createSyncProductLite = "CREATE TABLE products_sync_lite (_id integer primary key autoincrement, code_, name_, price_, comm_, cat_id_, create_date_, write_date_, copia_product_id_ INTEGER, image_id_, desc_,prod_type, sales_volume);";
-        String createOrderTable = "CREATE TABLE order_table (_id integer primary key autoincrement, cust_phone_, date_time_, type_, expected_delivery_date_, order_status_, agent_id_);";
+        String createOrderTable = "CREATE TABLE order_table (_id integer primary key autoincrement, cust_phone_, date_time_, type_, expected_delivery_date_, order_status_, agent_id_, reference_, order_sent_id_);";
         String createOrderTable1 = "CREATE TABLE order_table1 (_id integer primary key autoincrement, cust_phone_, date_time_, type_, expected_delivery_date_, order_status_, agent_id_, order_sent_id_);";
         String createOrderTableLines = "CREATE TABLE order_table_lines (_id integer primary key autoincrement, code_, name_, price_, comm_, quantity_, total_, date_time_, order_id_, desc_, copia_product_id_);";
         String createCommonTable = "CREATE TABLE common_table (_id integer primary key autoincrement, copia_product_id_, count_);";
+        String CreateAgentLogin = "CREATE TABLE IF NOT EXISTS agent_login_lite(_id integer primary key autoincrement, user_name, password, user_type,uid,partner_id)";
 
 
 
@@ -35,6 +36,7 @@ public class DatabaseOpenHelperSqlite extends SQLiteOpenHelper {
         db.execSQL(createOrderTable1);
         db.execSQL(createOrderTableLines);
         db.execSQL(createCommonTable);
+        db.execSQL(CreateAgentLogin);
     }
 
     @Override

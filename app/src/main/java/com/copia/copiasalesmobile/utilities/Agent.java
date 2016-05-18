@@ -11,6 +11,34 @@ public class Agent {
     String id;
     String write_date;
     String experiment_id;
+    String user_name;
+    String password;
+    String user_id;
+
+    public String getUser_name() {
+        return user_name;
+    }
+
+    public void setUser_name(String user_name) {
+        this.user_name = user_name;
+    }
+
+
+    public String getUser_id() {
+        return user_id;
+    }
+
+    public void setUser_id(String user_id) {
+        this.user_id = user_id;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     public String getExperiment_id() {
         return experiment_id;

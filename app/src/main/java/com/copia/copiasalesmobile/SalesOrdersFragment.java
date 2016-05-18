@@ -128,7 +128,9 @@ public class SalesOrdersFragment extends ListFragment {
 				conAdapter.changeCursor(result); // set the adapter's Cursor
 			}
 			dbConnector.close();
-			progress.dismiss();
+			if(progress != null){
+				progress.dismiss();
+			}
 
 		}
 	}

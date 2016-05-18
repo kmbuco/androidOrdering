@@ -23,25 +23,27 @@ import com.copia.copiasalesmobile.SQLite.DatabaseConnectorSqlite;
 import com.copia.copiasalesmobile.utilities.AlertDialogManager;
 import com.copia.copiasalesmobile.utilities.Validation;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 
 public class AddCustomerActivity extends AppCompatActivity {
     //add the reference if exists
     public static final String MyPREFERENCES = "MyPrefs" ;
-    public EditText edPhone;
+    public EditText edPhone, edRef;
     public TextView tvDateTime, tvPhoneExists, tvOrderID;
     public DatabaseConnectorSqlite db;
     public Button btnAdd;
-    public Integer int_year, int_month, int_date, int_hour, int_min, int_sec;
+    public Integer int_year, int_month, int_date, int_hour, int_min, int_sec,current_int_year,current_int_month,current_int_date;
     AlertDialogManager alert = new AlertDialogManager();
     String hrs = "hrs";
     String sAgent_id = "";
     SharedPreferences sharedpreferences;
     SharedPreferences.Editor editor;
     public SimpleAdapter conAdapter;
-    public String sOrderID = "", sEnterPhone = "", sCheckPhone = "", sNewID = "", sType = "",sDeliveryDate= "", sOrder_Status ="", sDate_time ="";
+    public String sOrderID = "", sEnterPhone = "", sCheckPhone = "", sNewID = "", sType = "",sDeliveryDate= "", sOrder_Status ="", sDate_time ="",sRef;
 
     public static final int DATE_DIALOG_ID_FOR = 0;
     public DatePicker date_picker;
@@ -72,6 +74,7 @@ public class AddCustomerActivity extends AppCompatActivity {
         tvDateTime = (TextView) findViewById(R.id.customer_add_date_time);
         tvPhoneExists = (TextView) findViewById(R.id.customer_check_exists);
         tvOrderID = (TextView) findViewById(R.id.customer_get_id);
+        edRef = (EditText) findViewById(R.id.input_ref);
 
         getDateTime();
 
@@ -104,8 +107,10 @@ public class AddCustomerActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
+                //sDeliveryDate = getDeliveryDate();
                 if (checkValidation()) {
                     sEnterPhone = edPhone.getText().toString().trim();
+                    sRef = edRef.getText().toString().trim();
                     new CheckExists().execute(sEnterPhone);
                 } else {
                     alert.showAlertDialog(AddCustomerActivity.this,
@@ -128,7 +133,7 @@ public class AddCustomerActivity extends AppCompatActivity {
         @Override
         protected Cursor doInBackground(String... params) {
             dbConnector.open();
-            return dbConnector.checkPhoneExists(sEnterPhone);
+            return dbConnector.checkReferenceExists(sEnterPhone,sRef);
         }
 
         @Override
@@ -193,18 +198,25 @@ public class AddCustomerActivity extends AppCompatActivity {
 
                             if (getIntent().getExtras() == null) {
 
+                                /*newCon.put("cust_phone_", sPhone);
+                                newCon.put("date_time_", sDateTime);
+                                newCon.put("type_", sType);
+                                newCon.put("expected_delivery_date_", sDeliveryDate);
+                                newCon.put("order_status_", sStatus);
+                                newCon.put("agent_id_", "");*/
+
                                 dbConnector.insertOrderTable(
                                         edPhone.getText().toString().trim(),
                                         tvDateTime.getText().toString().trim(),
                                         sType,
                                         sDeliveryDate,
-                                        "0");
+                                        "0",sRef);
                             } else {
                                 dbConnector.updateOrderTable(sOrderID,
                                         edPhone.getText().toString().trim(),
                                         tvDateTime.getText().toString().trim(),
                                         sDeliveryDate
-                                        ,"0","");
+                                        ,"0",sRef);
                             }
                             //finish();
                         }
@@ -278,19 +290,65 @@ public class AddCustomerActivity extends AppCompatActivity {
     }
     private String getDeliveryDate() {
         String date = "";
-        String current_date;
-        String default_delivery_date;
-        getDateTime();
+        String current_date = "";
+        String current_day;
+        int current_hour,current_minute;
+        String default_delivery_date = "";
+        //getDateTime();
         final Calendar c = Calendar.getInstance();
-        int_year = c.get(Calendar.YEAR);
-        int_month = c.get(Calendar.MONTH);
-        int_date = c.get(Calendar.DAY_OF_MONTH);
+        current_int_year = c.get(Calendar.YEAR);
+        current_int_month = c.get(Calendar.MONTH);
+        current_int_date = c.get(Calendar.DAY_OF_MONTH);
+        current_hour = c.get(Calendar.HOUR_OF_DAY);
+        current_minute = c.get(Calendar.MINUTE);
 
-        current_date = (new StringBuilder().append(int_year).append("-").append(int_month+1).append("-").append(int_date)).toString();
+        current_date = (new StringBuilder().append(current_int_year).append("-").append(current_int_month+1).append("-").append(current_int_date)).toString();
+
+
+        SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE", Locale.UK);
+        Calendar calendar = Calendar.getInstance();
+        current_day = dayFormat.format(calendar.getTime());
+        Log.e("The day today: ", current_day);
+
+        current_day = current_day.toLowerCase();
+        String[] matches = new String[] {"mon", "tue", "wed", "thu"};
+        for (String s : matches)
+        {
+            if (current_day.contains(s))
+            {
+                if(current_hour <= 9 && current_minute <= 30){
+                    current_int_date = current_int_date+1;
+                }else{
+                    current_int_date = current_int_date+2;
+                }
+                break;
+            }else if(current_day.contains("fri")){
+                if(current_hour <= 9 && current_minute <= 30){
+                    current_int_date = current_int_date+1;
+                }else{
+                    current_int_date = current_int_date+3;
+                }
+                break;
+            }else if(current_day.contains("sat")){
+                if(current_hour <= 9 && current_minute <= 30){
+                    current_int_date = current_int_date+2;
+                }else{
+                    current_int_date = current_int_date+3;
+                }
+                break;
+            }else if(current_day.contains("sun")){
+
+                current_int_date = +2;
+
+                break;
+            }
+        }
+
+        date = (new StringBuilder().append(current_int_year).append("-").append(current_int_month+1).append("-").append(current_int_date)).toString();
         Log.e("The current date is : ",current_date);
 
         if(tv_show_date_for.getText().toString().contains("eg")){
-            date = (new StringBuilder().append(int_year).append("-").append(int_month).append("-").append(int_date+2)).toString();
+            //date = (new StringBuilder().append(int_year).append("-").append(int_month).append("-").append(int_date+2)).toString();
             Log.e("The default date is : ",date);
         }else{
             date = tv_show_date_for.getText().toString();

@@ -452,8 +452,8 @@ public class DatabaseConnectorSqlite {
                         String sExperiment_id =  cursor.getString(cursor.getColumnIndex("experiment_id"));
 
 
-                    Log.e("the IDS sql : ", sql);
-                    Log.e("The fields : ", "Agent Ids : "+sAgentId);
+                    //Log.e("the IDS sql : ", sql);
+                    //Log.e("The fields : ", "Agent Ids : "+sAgentId);
                 } while (cursor.moveToNext());
             }
         }
@@ -522,7 +522,7 @@ public class DatabaseConnectorSqlite {
         String sql = "";
 
 
-        sql += "SELECT _id, cust_phone_, date_time_, type_, expected_delivery_date_, agent_id_, order_status_ FROM " + DATABASE_TABLE;
+        sql += "SELECT _id, cust_phone_, date_time_, type_, expected_delivery_date_, agent_id_, order_status_, reference_ FROM " + DATABASE_TABLE;
         sql += " WHERE (_id = "+ order_id + ")";
 
 
@@ -694,10 +694,11 @@ public class DatabaseConnectorSqlite {
         String comm_;
         String total_;
         String copia_product_id_;
+        String reference_;
         //get all sync orders from order table into an arrayList
         //iterate over the arrayList of orders and add the order lines
         open();
-        Cursor cursor =  database.query("order_table", new String[]{"_id", "cust_phone_", "date_time_", "type_","expected_delivery_date_","order_status_","agent_id_"}, "order_status_" + " = '2' ",
+        Cursor cursor =  database.query("order_table", new String[]{"_id", "cust_phone_", "date_time_", "type_","expected_delivery_date_","order_status_","agent_id_","reference_"}, "order_status_" + " = '2' ",
                 null, null, null, "_id");
 
         if (cursor != null) {
@@ -710,12 +711,14 @@ public class DatabaseConnectorSqlite {
                 stype_ = cursor.getString(cursor.getColumnIndex("type_"));
                 sexpected_delivery_date_ = cursor.getString(cursor.getColumnIndex("expected_delivery_date_"));
                 agent_id_ = cursor.getString(cursor.getColumnIndex("agent_id_"));
+                    reference_ = cursor.getString(cursor.getColumnIndex("reference_"));
                 ordProdLine.setsOrderID(sOrderID);
                 ordProdLine.setScust_phone_(scust_phone_);
                 ordProdLine.setSdate_time_(sdate_time_);
                 ordProdLine.setStype_(stype_);
                 ordProdLine.setSexpected_delivery_date_(sexpected_delivery_date_);
                 ordProdLine.setAgent_id_(agent_id_);
+                ordProdLine.setsReference(reference_);
 
                 Cursor cursorLine = database.query("order_table_lines", new String[]{"code_", "name_", "price_", "quantity_", "comm_", "total_", "copia_product_id_"}, "order_id_" + " = '" + sOrderID + "'",
                         null, null, null, "_id");
@@ -788,6 +791,9 @@ public class DatabaseConnectorSqlite {
     public Cursor checkPhoneExists(String sCPhone) {
         return database.query("order_table", null, "cust_phone_" + " = '" + sCPhone + "' and (order_status_ = '0' or order_status_ = '2') ", null, null, null, null);
     }
+    public Cursor checkReferenceExists(String sCPhone, String sRef) {
+        return database.query("order_table", null, "cust_phone_" + " = '" + sCPhone + "' and (order_status_ = '0' or order_status_ = '2') and reference_ = '" + sRef + "'", null, null, null, null);
+    }
     public Cursor checkPhoneExistsPending(String sCPhone) {
         return database.query("order_table", null, "cust_phone_" + " = '" + sCPhone + "' and order_status_ = '2' ", null, null, null, null);
     }
@@ -798,7 +804,7 @@ public class DatabaseConnectorSqlite {
      * @param sDateTime
      */
 
-    public void insertOrderTable(String sPhone, String sDateTime, String sType,String sDeliveryDate,String sStatus) {
+    public void insertOrderTable(String sPhone, String sDateTime, String sType,String sDeliveryDate,String sStatus,String sRef) {
         ContentValues newCon = new ContentValues();
         newCon.put("cust_phone_", sPhone);
         newCon.put("date_time_", sDateTime);
@@ -806,6 +812,7 @@ public class DatabaseConnectorSqlite {
         newCon.put("expected_delivery_date_", sDeliveryDate);
         newCon.put("order_status_", sStatus);
         newCon.put("agent_id_", "");
+        newCon.put("reference_", sRef);
 
         open();
         database.insert("order_table", null, newCon);
@@ -816,9 +823,15 @@ public class DatabaseConnectorSqlite {
         ContentValues editCon = new ContentValues();
         editCon.put("cust_phone_", sPhone);
         editCon.put("date_time_", sDateTime);
-        editCon.put("expected_delivery_date_",sDeliveryDate);
-        editCon.put("order_status_", sStatus);
-        editCon.put("agent_id_", sAgentId);
+        if(sDeliveryDate!= null && !sDeliveryDate.isEmpty()){
+            editCon.put("expected_delivery_date_",sDeliveryDate);
+        }
+        if(sStatus != null && !sStatus.isEmpty()){
+            editCon.put("order_status_", sStatus);
+        }
+        if(sAgentId != null && !sAgentId.isEmpty()){
+            editCon.put("agent_id_", sAgentId);
+        }
         if (sAgentId!= null){
             Log.e("update Id: ", "Agent Id is null");
         }else{
@@ -913,6 +926,101 @@ public class DatabaseConnectorSqlite {
         open();
         database.update("common_table", editCon, "copia_product_id_" + " = '" + sCopiaID + "'", null);
         System.out.println("********Value Updated = " + editCon);
+        close();
+    }
+
+    public ArrayList<Agent> getAgentLoginDetails(){
+        ArrayList<Agent> agentLst = new ArrayList();
+        String DATABASE_TABLE = "agent_login_lite";
+
+        String sql = "";
+        sql += "SELECT * FROM " +DATABASE_TABLE;
+
+        open();
+        Cursor cursor = database.rawQuery(sql, null);
+
+        if(cursor.moveToFirst()){
+            do{
+                //(_id integer primary key autoincrement, user_name, password, user_type)
+                Agent agent = new Agent();
+                agent.setUser_name(cursor.getString(1));
+                agent.setPassword(cursor.getString(2));
+                agent.setUser_id(cursor.getString(4));
+                agent.setId(cursor.getString(5));  //partner_id
+                agentLst.add(agent);
+            }while(cursor.moveToNext());
+        }
+        close();
+
+        return agentLst;
+
+    }
+
+    public ArrayList<Agent> getAgentDetails(){
+        ArrayList<Agent> agentLst = new ArrayList();
+        String DATABASE_TABLE = "agent_conf_lite";
+
+        String sql = "";
+        sql += "SELECT * FROM " +DATABASE_TABLE;
+
+        open();
+        Cursor cursor = database.rawQuery(sql, null);
+
+        if(cursor.moveToFirst()){
+            do{
+                //_id integer primary key autoincrement, name_, phone, email, location, user_name, password
+                Agent agent = new Agent();
+                agent.setName(cursor.getString(1));
+                agent.setPhone(cursor.getString(2));
+                agent.setMobile(cursor.getString(3));
+                //agent.setLocation(cursor.getString(4));
+                agent.setUser_name(cursor.getString(5));
+                agent.setPassword(cursor.getString(6));
+                agentLst.add(agent);
+            }while(cursor.moveToNext());
+        }
+        close();
+
+        return agentLst;
+    }
+
+    public void insertLoginAgent(String user_name,String password, String agent_type,String user_id,String partner_id){
+        //delete the previous agent configurations.
+        //(_id integer primary key autoincrement, user_name, password, user_type)
+
+        open();
+        database.delete("agent_login_lite", null, null);
+
+        ContentValues newCon = new ContentValues();
+        newCon.put("user_type", agent_type);
+        newCon.put("user_name", user_name);
+        newCon.put("password",password);
+        newCon.put("uid",user_id);
+        newCon.put("partner_id",partner_id);
+
+
+        database.insert("agent_login_lite", null, newCon);
+        //System.out.println("********Insert agent_conf_lite = " + newCon);
+        close();
+    }
+
+    public void insertAgent(String name_,String phone,String email,String location,String user_name,String password){
+        //delete the previous agent configurations.
+        open();
+        database.delete("agent_conf_lite", null, null);
+
+
+        ContentValues newCon = new ContentValues();
+        newCon.put("name_", name_);
+        newCon.put("phone", phone);
+        newCon.put("email", email);
+        newCon.put("location", location);
+        newCon.put("user_name", user_name);
+        newCon.put("password",password);
+
+
+        database.insert("agent_conf_lite", null, newCon);
+        //System.out.println("********Insert agent_conf_lite = " + newCon);
         close();
     }
 

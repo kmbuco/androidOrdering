@@ -12,6 +12,7 @@ public class Order {
     String order_status_;
     String order_id;
     String agent_id_;
+    String order_ref;
 
     public String getAgent_id_() {
         return agent_id_;
@@ -59,5 +60,12 @@ public class Order {
 
     public void setCust_phone_(String cust_phone_) {
         this.cust_phone_ = cust_phone_;
+    }
+    public String getOrder_ref() {
+        return order_ref;
+    }
+
+    public void setOrder_ref(String order_ref) {
+        this.order_ref = order_ref;
     }
 }

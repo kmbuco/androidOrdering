@@ -12,6 +12,7 @@ public class OrderProdLines {
     String stype_;
     String sexpected_delivery_date_;
     String agent_id_;
+    String sReference;
     ArrayList<productLine> arrProdLines;
 
     public String getsOrderID() {
@@ -68,6 +69,15 @@ public class OrderProdLines {
 
     public void setAgent_id_(String agent_id_) {
         this.agent_id_ = agent_id_;
+    }
+
+
+    public String getsReference() {
+        return sReference;
+    }
+
+    public void setsReference(String sReference) {
+        this.sReference = sReference;
     }
 
 }

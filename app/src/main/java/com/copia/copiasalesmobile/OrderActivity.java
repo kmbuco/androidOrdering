@@ -82,7 +82,7 @@ public class OrderActivity extends AbstractBaseActivity {
     int commPercent;
     String sCode = "", sName = "", sComm = "", sPrice = "", sDesc = "", sImage = "", sCopiaID = "", slabel = "", sTotal = "";
     public String sOrderID = "", sCPhone = "", sNewOrderID = "", sNewCustomer = "", sEnterCode = "",
-            sCheckCode = "", sCheckCopiaID = "", sCountValue = "", sCountUpdate = "", sType = "", sDeliveryDate = "", sAgent_id = "";
+            sCheckCode = "", sCheckCopiaID = "", sCountValue = "", sCountUpdate = "", sType = "", sDeliveryDate = "", sAgent_id = "",sRef = "";
     public ImageView imageView;
     public EditText edQuantity;
     String strSQuantity;
@@ -170,8 +170,10 @@ public class OrderActivity extends AbstractBaseActivity {
             order = getorder.getOrder(dbconnector, sOrderID);
 
             sAgentId = order.getAgent_id_();
+            sRef= order.getOrder_ref();
             Log.e("Agent Id for List ", sAgentId);
             Log.e("Order Type:", sType);
+            Log.e("Order Ref:", sRef);
         } else {
             sOrderID = "";
             sCPhone = "";
@@ -291,7 +293,6 @@ public class OrderActivity extends AbstractBaseActivity {
                 dbconnector.updateOrderTable(sOrderID,sCPhone,sDeliveryDate,sDeliveryDate,sOrderStatus,sAgentId);
 
                 myAutoAgentComplete.setText(sAgentName);
-
             }
         });
 
@@ -976,7 +977,7 @@ public class OrderActivity extends AbstractBaseActivity {
                 //pDialog.setIndeterminate(false);
                 //pDialog.setCancelable(true);
                 pDialog =  ProgressDialog.show(OrderActivity.this, "", "Sending Order...Please wait!");
-                //pDialog.show();
+                pDialog.show();
             }
 
             @Override
@@ -1049,7 +1050,7 @@ public class OrderActivity extends AbstractBaseActivity {
 
                 if(utilityConn.isOnline()){
 
-                    order_id = func.createOrder(product_codes, sAgentId ,sCPhone,product_quantity,sDeliveryDate,sOrderID);
+                    order_id = func.createOrder(product_codes, sAgentId ,sCPhone,product_quantity,sDeliveryDate,sOrderID,sRef);
                 }else{
 
                     String date_time = order.getDate_time_();

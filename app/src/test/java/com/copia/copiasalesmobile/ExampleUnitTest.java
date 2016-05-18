@@ -1,4 +1,4 @@
-package com.afrimobify.copiasalesmobile;
+package com.copia.copiasalesmobile;
 
 import org.junit.Test;
 

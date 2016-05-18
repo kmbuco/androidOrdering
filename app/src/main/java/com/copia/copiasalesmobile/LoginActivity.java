@@ -35,6 +35,7 @@ import android.widget.TextView;
 import com.copia.copiasalesmobile.SQLite.DatabaseConnectorSqlite;
 import com.copia.copiasalesmobile.openErp.Functions;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -383,5 +384,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             showProgress(false);
         }
     }
+
 }
 

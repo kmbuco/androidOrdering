@@ -1,4 +1,4 @@
-package com.afrimobify.copiasalesmobile;
+package com.copia.copiasalesmobile;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

@@ -41,6 +41,8 @@ public class getOrders {
                 order.setAgent_id_(result.getString(result
                         .getColumnIndex("agent_id_")));
 
+                order.setOrder_ref(result.getString(result.getColumnIndex("reference_")));
+
 //                Log.e("The order date: ",order.getDate_time_());
             }while(result.moveToNext());
         }
