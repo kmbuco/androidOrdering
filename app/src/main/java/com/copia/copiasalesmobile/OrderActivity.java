@@ -977,7 +977,7 @@ public class OrderActivity extends AbstractBaseActivity {
                 //pDialog.setIndeterminate(false);
                 //pDialog.setCancelable(true);
                 pDialog =  ProgressDialog.show(OrderActivity.this, "", "Sending Order...Please wait!");
-                pDialog.show();
+                //pDialog.show();
             }
 
             @Override
@@ -1049,7 +1049,6 @@ public class OrderActivity extends AbstractBaseActivity {
                 //check if the agent is empty
 
                 if(utilityConn.isOnline()){
-
                     order_id = func.createOrder(product_codes, sAgentId ,sCPhone,product_quantity,sDeliveryDate,sOrderID,sRef);
                 }else{
 
@@ -1065,6 +1064,9 @@ public class OrderActivity extends AbstractBaseActivity {
                     if(PDialog!= null){
                         PDialog.dismiss();
                     }
+                }
+                if(PDialog!= null){
+                    PDialog.dismiss();
                 }
                 Log.e("The order ID", Integer.toString(order_id));
 

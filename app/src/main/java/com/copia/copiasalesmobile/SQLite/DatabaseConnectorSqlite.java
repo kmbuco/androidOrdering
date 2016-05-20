@@ -720,29 +720,32 @@ public class DatabaseConnectorSqlite {
                 ordProdLine.setAgent_id_(agent_id_);
                 ordProdLine.setsReference(reference_);
 
-                Cursor cursorLine = database.query("order_table_lines", new String[]{"code_", "name_", "price_", "quantity_", "comm_", "total_", "copia_product_id_"}, "order_id_" + " = '" + sOrderID + "'",
+                Cursor cursorLine = database.query("order_table_lines", new String[]{"code_", "name_", "price_", "quantity_", "comm_", "total_", "copia_product_id_","order_id_"}, "order_id_" + " = '" + sOrderID + "'",
                         null, null, null, "_id");
                 if (cursorLine != null) {
                     if (cursorLine.moveToFirst()) {
-                        do{
-                        pdtLine = new productLine();
-                        code_ = cursorLine.getString(cursorLine.getColumnIndex("code_"));
-                        name_ = cursorLine.getString(cursorLine.getColumnIndex("name_"));
-                        price_ = cursorLine.getString(cursorLine.getColumnIndex("price_"));
-                        quantity_ = cursorLine.getString(cursorLine.getColumnIndex("quantity_"));
-                        comm_ = cursorLine.getString(cursorLine.getColumnIndex("comm_"));
-                        total_ = cursorLine.getString(cursorLine.getColumnIndex("total_"));
-                        copia_product_id_ = cursorLine.getString(cursorLine.getColumnIndex("copia_product_id_"));
+                        if(sOrderID.trim().equals(cursorLine.getString(cursorLine.getColumnIndex("order_id_")).trim())) {
+                            orderArrayList = new ArrayList<>();
+                            do {
+                                pdtLine = new productLine();
+                                code_ = cursorLine.getString(cursorLine.getColumnIndex("code_"));
+                                name_ = cursorLine.getString(cursorLine.getColumnIndex("name_"));
+                                price_ = cursorLine.getString(cursorLine.getColumnIndex("price_"));
+                                quantity_ = cursorLine.getString(cursorLine.getColumnIndex("quantity_"));
+                                comm_ = cursorLine.getString(cursorLine.getColumnIndex("comm_"));
+                                total_ = cursorLine.getString(cursorLine.getColumnIndex("total_"));
+                                copia_product_id_ = cursorLine.getString(cursorLine.getColumnIndex("copia_product_id_"));
 
-                        pdtLine.setCode_(code_);
-                        pdtLine.setName_(name_);
-                        pdtLine.setPrice_(price_);
-                        pdtLine.setQuantity_(quantity_);
-                        pdtLine.setComm_(comm_);
-                        pdtLine.setTotal_(total_);
-                        pdtLine.setCopia_product_id_(copia_product_id_);
-                        orderArrayList.add(pdtLine);
-                        }while(cursorLine.moveToNext());
+                                pdtLine.setCode_(code_);
+                                pdtLine.setName_(name_);
+                                pdtLine.setPrice_(price_);
+                                pdtLine.setQuantity_(quantity_);
+                                pdtLine.setComm_(comm_);
+                                pdtLine.setTotal_(total_);
+                                pdtLine.setCopia_product_id_(copia_product_id_);
+                                orderArrayList.add(pdtLine);
+                            } while (cursorLine.moveToNext());
+                        }
                     }
 
                 }

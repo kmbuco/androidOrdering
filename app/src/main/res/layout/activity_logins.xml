@@ -2,24 +2,27 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+    android:layout_height="fill_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/copialanding">
 
     <FrameLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:orientation="vertical"
-        android:layout_gravity="center_vertical">
-        <ImageView
+        android:layout_gravity="center_vertical"
+        android:background="@drawable/scrim_gradient">
+        <!--ImageView
             android:layout_height="fill_parent"
             android:layout_width="fill_parent"
             android:src="@drawable/copialanding"
             android:adjustViewBounds="true"
-            android:scaleType="fitXY"/>
-        <ImageView
+            android:scaleType="fitXY"/-->
+        <!--ImageView
             android:layout_height="fill_parent"
             android:layout_width="fill_parent"
             android:src="@drawable/gradientsmall"
-            android:scaleType="centerCrop"/>
+            android:scaleType="centerCrop"/-->
 
 
 
@@ -44,7 +47,7 @@
             android:layout_marginTop="10dp"
             android:layout_gravity="center_horizontal"
             android:textSize="20sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold" />
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
@@ -66,6 +69,7 @@
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:hintTextAppearance="@style/BlueTextInputLayout"
             android:paddingRight="@dimen/activity_horizontal_margin"
             android:paddingLeft="@dimen/activity_horizontal_margin">
 

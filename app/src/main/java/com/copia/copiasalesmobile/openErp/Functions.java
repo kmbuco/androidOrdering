@@ -29,7 +29,7 @@ public class Functions {
     DatabaseConnectorSqlite dbconnector;
 
     static final String db = "copiaERP";
-    static final String host = "http://52.89.125.104";
+    static final String host = "http://54.201.157.222";
     static final int port = 8069;
     static final String password = "@dm1n2014_cop1a_erp";
     String phone;
@@ -49,8 +49,8 @@ public class Functions {
         clientConfig.setEnabledForExtensions(true);
         clientConfig1.setEnabledForExtensions(true);
         try {
-            clientConfig.setServerURL(new URL("http", "52.89.125.104", 8069, "/xmlrpc/object"));
-            clientConfig1.setServerURL(new URL("http", "52.89.125.104", 8069, "/xmlrpc/common"));
+            clientConfig.setServerURL(new URL("http", "54.201.157.222", 8069, "/xmlrpc/object"));
+            clientConfig1.setServerURL(new URL("http", "54.201.157.222", 8069, "/xmlrpc/common"));
         } catch (MalformedURLException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -194,7 +194,7 @@ public class Functions {
         //HashMap<String, Object> vals = new HashMap<String, Object>();
     }
 
-    //place an
+    //place an order
     public int createOrder(String productIds, String agentIds, String phone, String quantities,String date_delivery, String sOrderId,String ref){
         Object  [] prodDetails;
         Object  [] custDetails;
@@ -390,7 +390,7 @@ public class Functions {
         System.out.println("The ArrayList" + linearArr1.toString());
 
         getOrders getorder = new getOrders();
-        Order order = getorder.getOrder(dbconnector, phone);
+        Order order = getorder.getOrder(dbconnector, sOrderId);
 
         String date_time = order.getDate_time_();
         String expected_delivery_date = order.getExpected_delivery_date_();
